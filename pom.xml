@@ -10,7 +10,7 @@
   <packaging>jar</packaging>
   <groupId>com.github.tstout</groupId>
   <artifactId>repl-kit</artifactId>
-  <version>1.0.2</version>
+  <version>1.0.3</version>
   <name>repl-kit</name>
 
   <url>https://github.com/tstout/repl-kit</url>
@@ -51,14 +51,31 @@
   </distributionManagement>
 
  <build>
-       <!-- <sourceDirectory>resources</sourceDirectory> -->
-        <!-- <resources>
+       <sourceDirectory>resources</sourceDirectory>
+        <resources>
           <resource>
             <directory>src</directory>
           </resource>
-        </resources> -->
-        <pluginManagement>
+        </resources>
         <plugins>
+         <plugin>
+         <!-- We must generate a -javadoc JAR file to publish on Maven Central -->
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-jar-plugin</artifactId>
+            <executions>
+                <execution>
+                    <id>empty-javadoc-jar</id>
+                    <phase>package</phase>
+                    <goals>
+                        <goal>jar</goal>
+                    </goals>
+                    <configuration>
+                        <classifier>javadoc</classifier>
+                        <classesDirectory>${basedir}/javadoc</classesDirectory>
+                    </configuration>
+                </execution>
+            </executions>
+        </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-source-plugin</artifactId>
@@ -77,15 +94,28 @@
                 <artifactId>maven-javadoc-plugin</artifactId>
                 <version>2.9.1</version>
                 <executions>
-                    <execution>
-                        <id>attach-javadocs</id>
-                        <goals>
-                            <goal>jar</goal>
-                        </goals>
-                    </execution>
-                </executions>
+                  <execution>
+                      <id>attach-javadocs</id>
+                      <goals>
+                          <goal>jar</goal>
+                      </goals>
+                      <phase>package</phase>
+                      <configuration>
+                          <show>public</show>
+                          <failOnError>false</failOnError>
+                          <detectOfflineLinks>false</detectOfflineLinks>
+                          <doclint>all,-missing</doclint>
+                          <nohelp>true</nohelp>
+                          <excludePackageNames>*.internal.*,testutil,demo</excludePackageNames>
+                          <quiet>true</quiet>
+                      </configuration>
+                  </execution>
+                    </executions>
+                    <configuration>
+                        <failOnError>false</failOnError>
+                    </configuration>
             </plugin>
-            <!-- <plugin>
+            <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-shade-plugin</artifactId>
             <version>3.5.3</version>
@@ -101,11 +131,11 @@
                       <mainClass>repl_kit.core</mainClass>
                     </transformer>
                   </transformers>
-		            <outputFile>repl-kit.jar</outputFile>
+		            <!-- <outputFile>repl-kit.jar</outputFile> -->
 		          </configuration>
               </execution>
             </executions>
-          </plugin> -->
+          </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-gpg-plugin</artifactId>
@@ -131,7 +161,7 @@
                     <autoReleaseAfterClose>true</autoReleaseAfterClose>
                 </configuration>
             </plugin>
-            <!-- <plugin>
+            <plugin>
 	            <groupId>org.apache.maven.plugins</groupId>
 	            <artifactId>maven-compiler-plugin</artifactId>
 	            <version>3.13.0</version>
@@ -140,9 +170,8 @@
 	            <target>1.8</target>
 	            <encoding>UTF-8</encoding>
 	            </configuration>
-            </plugin> -->
+            </plugin>
         </plugins>
-        </pluginManagement>
     </build>
 
 
