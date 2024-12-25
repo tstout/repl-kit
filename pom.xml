@@ -10,7 +10,7 @@
   <packaging>jar</packaging>
   <groupId>com.github.tstout</groupId>
   <artifactId>repl-kit</artifactId>
-  <version>1.0.4</version>
+  <version>1.0.5</version>
   <name>repl-kit</name>
 
   <url>https://github.com/tstout/repl-kit</url>
