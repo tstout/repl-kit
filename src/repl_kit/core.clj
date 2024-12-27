@@ -1,5 +1,6 @@
 (ns repl-kit.core
   (:require [clojure.tools.cli :refer [parse-opts]]
+            [repl-kit.theme :refer [apply-dark-theme]]
             [seesaw.core :refer [show!
                                  frame
                                  text
@@ -15,6 +16,19 @@
             [seesaw.dev :refer [show-events show-options]])
   (:import [org.fife.ui.rtextarea RTextScrollPane])
   (:gen-class))
+
+(def notes 
+  "For showing results of REPL evaluation consider using 
+   Graphics.drawText(String text, int x, int y)
+   Need to see how to translate txt position in RSyntaxTextArea to 
+   coordinates")
+
+(defn caret-coords [ta]
+  (let [{:keys [x y]} (-> ta 
+                          bean 
+                          :caret
+                          bean)]
+    {:x x :y y}))
 
 (defn mk-frame []
   (let [f (frame :title "REPL-KIT" 
@@ -41,12 +55,14 @@
                       :items [[ (RTextScrollPane. ta true) "span, grow"]
                               [ :separator         "growx, wrap"]
                               [ (scrollable lw)     "span, grow"]]) 
-        ops {:get-text (fn [] (.getText ta))
-             :show     (fn [] (fr :show))
-             :get-ta   (fn [] ta)
-             :log (fn [msg] (log lw msg))
+        ops {:get-text  (fn [] (.getText ta))
+             :show      (fn [] (fr :show))
+             :load-file (fn [file] (.setText ta (slurp file)))
+             :get-ta    (fn [] ta)
+             :log       (fn [msg] (log lw msg))
              :clear-log (fn [] (clear lw))}]
-    (fr :set-content sp) 
+    (fr :set-content sp)
+    (apply-dark-theme ta)
     (listen ta #{:key-typed :property-change} (fn [e] (prn (bean e))))
     (log lw "REPL-KIT V1.0.4\n")
     (fn [operation & args] (-> (ops operation) (apply args)))))
@@ -57,15 +73,29 @@
 
 (comment
   *e
-  (def app (mk-app)) 
+  (def app (mk-app))
   (app :show)
   (app :get-text)
-  (.getCaretOffsetFromLineStart (app :get-ta)) 
-  (show-events (app :get-ta))
-  (show-options (app :get-ta)) 
 
-  (config! (app :get-ta) :content "This ia  a test")
+  (-> .getX (.getCaret (app :get-ta)))
+
+  (bean (:caret (bean (app :get-ta))))
+
+  (caret-coords (app :get-ta))
+
+  (.getCaretOffsetFromLineStart (app :get-ta))
+  (show-events (app :get-ta))
+  (show-options (app :get-ta))
+
+  (app :load-file "pom.xml")
+
+
+
   (.setText (app :get-ta) (slurp "deps.edn"))
+
+
+  (range 10)
+
   (app :log "Hello..\n")
   (app :clear-log)
   (load-file)
