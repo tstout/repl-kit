@@ -1,6 +1,7 @@
 (ns repl-kit.core
   (:require [clojure.tools.cli :refer [parse-opts]]
             [repl-kit.theme :refer [apply-dark-theme]]
+            [seesaw.keymap :refer [map-key]]
             [seesaw.core :refer [show!
                                  frame
                                  text
@@ -22,6 +23,15 @@
    Graphics.drawText(String text, int x, int y)
    Need to see how to translate txt position in RSyntaxTextArea to 
    coordinates")
+
+
+(defn tokens 
+  "Acquire seq of current parse tokens for the text Area"
+  [ta]
+  (-> ta
+      .getDocument
+      .iterator
+      iterator-seq))
 
 (defn caret-coords [ta]
   (let [{:keys [x y]} (-> ta 
@@ -63,7 +73,10 @@
              :clear-log (fn [] (clear lw))}]
     (fr :set-content sp)
     (apply-dark-theme ta)
-    (listen ta #{:key-typed :property-change} (fn [e] (prn (bean e))))
+    (map-key ta 
+             "control ENTER"
+             (fn [e] (prn e "You pressed ctrl+enter!")))
+    #_(listen ta #{:key-typed :property-change} (fn [e] (prn (bean e))))
     (log lw "REPL-KIT V1.0.4\n")
     (fn [operation & args] (-> (ops operation) (apply args)))))
 
@@ -74,33 +87,66 @@
 (comment
   *e
   (def app (mk-app))
+
+  (app :get-text)
   (app :show)
   (app :get-text)
 
-  (-> .getX (.getCaret (app :get-ta)))
+  (def tokens
+    
+    
+    (count tokens)
 
-  (bean (:caret (bean (app :get-ta))))
+    (first tokens)
 
-  (caret-coords (app :get-ta))
+    (.getLineCount (app :get-ta))
+    (.getLineStartOffsetOfCurrentLine (app :get-ta))
+    ()
 
-  (.getCaretOffsetFromLineStart (app :get-ta))
-  (show-events (app :get-ta))
-  (show-options (app :get-ta))
+    (def ta (app :get-ta))
 
-  (app :load-file "pom.xml")
+    (->> ta 
+         tokens 
+         (filter #(false? (.isCommentOrWhitespace %)))) 
+
+    
+    (tokens ta)
+    (.getDocument ta)
+    (bean ta)
+    (bean (app :get-ta))
+
+    (.getParserCount ta)
+
+
+    (-> (app :get-ta) bean :highlighter bean)
+    (type (app :get-ta))
+
+    *ns*
+
+    (-> .getX (.getCaret (app :get-ta)))
+
+    (bean (:caret (bean (app :get-ta))))
+
+    (caret-coords (app :get-ta))
+
+    (.getCaretOffsetFromLineStart (app :get-ta))
+    (show-events (app :get-ta))
+    (show-options (app :get-ta))
+
+    (app :load-file "pom.xml")
 
 
 
-  (.setText (app :get-ta) (slurp "deps.edn"))
+    (.setText (app :get-ta) (slurp "deps.edn"))
 
 
-  (range 10)
+    (range 10)
 
-  (app :log "Hello..\n")
-  (app :clear-log)
-  (load-file)
-  (show-events (frame))
-  (show-events (seesaw.rsyntax/text-area :syntax :clojure :editable? true))
-  (show-options (seesaw.rsyntax/text-area :syntax :clojure :editable? true))
+    (app :log "Hello..\n")
+    (app :clear-log)
+    (load-file)
+    (show-events (frame))
+    (show-events (seesaw.rsyntax/text-area :syntax :clojure :editable? true))
+    (show-options (seesaw.rsyntax/text-area :syntax :clojure :editable? true))
   ;;
-  )
+    )
