@@ -26,58 +26,6 @@
     :name    "my-prepl"
     :args    [:valf identity]}))
 
-
-;; (defn eval-form [code]
-;;   (with-open [reader (PipedReader.) 
-;;               writer (PipedWriter.)]
-;;     (.connect reader writer)
-;;     (let [result! (promise)]
-;;       (future
-;;         (server/remote-prepl
-;;          "localhost" "5555"
-;;          reader
-;;          (fn [msg]
-;;            (deliver result! msg))
-;;          :valf identity))
-;;       (.write writer code)
-;;       (.flush writer)
-;;       @result!)))
-
-;; (defmacro ^:private thread
-;;   [^String name daemon & body]
-;;   `(doto (Thread. (fn [] ~@body) ~name)
-;;      (.setDaemon ~daemon)
-;;      (.start)))
-
-
-;; (defn repl-eval [writer code state]
-;;   (.write writer code)
-;;   (.flush writer)
-;;   @@state)
-
-
-;; (defn mk-repl-conn [host port]
-;;   (let [reader   (PipedReader.)
-;;         writer   (PipedWriter.)
-;;         state    (atom (promise))
-;;         repl-fut (future
-;;                    (server/remote-prepl
-;;                     host 
-;;                     port
-;;                     reader
-;;                     (fn [msg]
-;;                       (deliver @state msg))
-;;                     :valf identity)) 
-;;         ops      {:close (fn [] nil)
-;;                   :eval  (fn [code]
-;;                            (reset! state (promise))
-;;                            (.write writer code)
-;;                            (.flush writer)
-;;                            @@state)}]
-;;     (.connect reader writer)
-;;     (fn [operation & args] (-> (ops operation) (apply args)))))
-
-
 (defn connect-to-prepl [host port]
   (let [socket (Socket. host port)
         writer (PrintWriter. (.getOutputStream socket) true)
@@ -100,11 +48,6 @@
 (defn do-eval [conn code]
   (send-form conn code)
   (read-response conn))
-
-(defn mk-evaluator []
-  
-  )
-
 
 (comment
   
