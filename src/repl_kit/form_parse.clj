@@ -40,12 +40,11 @@
 (def state-matrix
   "This matrix maps events to next-state/action pairs based on current state.
    nil values are interpreted as no-ops."
-  {; event name  :init                 :p-frm             :o-form       :error
-   :close-paren [[:p-frm form-end]     [nil form-end]     [nil nil]     [nil nil]]
-   :open-paren  [[:p-frm form-start]   [nil form-start]   [nil nil]     [nil nil]]
-   :ws-char     [[nil nil]             [nil nil]          [nil nil]     [nil nil]]
-   :other-char  [[nil nil]             [nil nil]          [nil nil]     [nil nil]]
-   })
+  {; event name  :init                 :p-frm             :o-form         :error
+   :close-paren [[:p-frm form-end]     [nil form-end]     [nil nil]       [nil nil]]
+   :open-paren  [[:p-frm form-start]   [nil form-start]   [nil nil]       [nil nil]]
+   :ws-char     [[nil nil]             [nil nil]          [nil form-end]  [nil nil]]
+   :other-char  [[:o-frm form-start]   [nil nil]          [nil nil]       [nil nil]]})
 
 (defn set-state
   "Replace current state with new-state, if new-state is not nil"
@@ -73,7 +72,7 @@
     (when action (action context))
     next-state))
 
-(defn form-start [txt init-offset]
+(defn find-form-start [txt init-offset]
   (let [ctxt (atom {:init-offset   init-offset
                     :current-state :init
                     :form-start    0
@@ -96,34 +95,17 @@
       (dec-offset ctxt))
     ctxt))
 
-
-;; (defn evt-handler
-;;   "Listen for events on the :main-bus topic. Push the events though the state matrix
-;;   triggering the appropriate behavior."
-;;   []
-;;   (let [sub-ch (sub-evt :main-bus :sm-ch)
-;;         context (atom {:animation-ch  nil
-;;                        :current-state :idle})]
-;;     (go-loop
-;;      []
-;;       (let [evt (<! sub-ch)]
-;;         (prn (str "RX SM event: " (evt-name evt)))
-;;         (->>
-;;          (invoke-action context state-matrix evt)
-;;          (set-state context))
-;;         (recur)))))
-
-
 (comment
   (def ctxt (atom {:offset 20}))
 
-  (form-start "[] (+ 20 20)" 11)
+  (find-form-start "[] (+ 20 20)" 12)
 
   (def expr "abc (+ 20 20)")
+  (def expr "  *ns*")
 
   (.length expr)
 
-  (form-start expr (.length expr))
+  (find-form-start expr (.length expr))
 
   (reverse "(+ 20 20)")
   \)

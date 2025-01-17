@@ -92,12 +92,12 @@
   (app :show)
   (app :get-text)
 
-  (def tokens
+  ;;(def tokens
     
     
-    (count tokens)
+    ;;(count tokens)
 
-    (first tokens)
+    ;;(first tokens)
 
     (.getLineCount (app :get-ta))
     (.getLineStartOffsetOfCurrentLine (app :get-ta))
