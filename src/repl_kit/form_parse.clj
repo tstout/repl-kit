@@ -40,11 +40,11 @@
 (def state-matrix
   "This matrix maps events to next-state/action pairs based on current state.
    nil values are interpreted as no-ops."
-  {; event name   :init                  :p-frm        :o-form       :error
-   :close-paren [[:p-frm form-end]     [nil nil]     [nil nil]     [nil nil]]
-   :open-paren  [[:p-frm form-start]   [nil nil]     [nil nil]     [nil nil]]
-   :ws-char     [[nil nil]             [nil nil]     [nil nil]     [nil nil]]
-   :other-char  [[nil nil]             [nil nil]     [nil nil]     [nil nil]]
+  {; event name  :init                 :p-frm             :o-form       :error
+   :close-paren [[:p-frm form-end]     [nil form-end]     [nil nil]     [nil nil]]
+   :open-paren  [[:p-frm form-start]   [nil form-start]   [nil nil]     [nil nil]]
+   :ws-char     [[nil nil]             [nil nil]          [nil nil]     [nil nil]]
+   :other-char  [[nil nil]             [nil nil]          [nil nil]     [nil nil]]
    })
 
 (defn set-state
@@ -73,7 +73,7 @@
     (when action (action context))
     next-state))
 
-(defn driver [txt init-offset]
+(defn form-start [txt init-offset]
   (let [ctxt (atom {:init-offset   init-offset
                     :current-state :init
                     :form-start    0
@@ -81,15 +81,18 @@
                     :offset        init-offset})] 
     (doseq [c      (reverse (subs txt 0 init-offset))
             :while (not (form-start-found? ctxt))]
-      (invoke-action ctxt 
-                     state-matrix 
-                     (case c
-                       \(    :open-paren
-                       \)    :close-paren
-                       \tab   :ws-char
-                       \space :ws-char
-                       \,     :ws-char
-                       :other-char))
+      (->> (invoke-action 
+            ctxt 
+            state-matrix 
+            (case c
+              \(       :open-paren
+              \)       :close-paren
+              \tab     :ws-char
+              \space   :ws-char
+              \,       :ws-char
+              \newline :ws-char
+              :other-char))
+           (set-state ctxt))
       (dec-offset ctxt))
     ctxt))
 
@@ -114,7 +117,13 @@
 (comment
   (def ctxt (atom {:offset 20}))
 
-  (driver "[] (+ 20 20)" 11)
+  (form-start "[] (+ 20 20)" 11)
+
+  (def expr "abc (+ 20 20)")
+
+  (.length expr)
+
+  (form-start expr (.length expr))
 
   (reverse "(+ 20 20)")
   \)
