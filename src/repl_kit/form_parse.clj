@@ -35,16 +35,17 @@
   {:init    0   ;; Initial
    :p-frm   1   ;; Paren form
    :o-frm   2   ;; Other form (string, constant, var, etc)
-   :error   3}) ;; Some error 
+   :d-frm   3   ;; Data form
+   :error   4}) ;; Some error 
 
 (def state-matrix
   "This matrix maps events to next-state/action pairs based on current state.
    nil values are interpreted as no-ops."
-  {; event name  :init                 :p-frm             :o-form         :error
-   :close-paren [[:p-frm form-end]     [nil form-end]     [nil nil]       [nil nil]]
-   :open-paren  [[:p-frm form-start]   [nil form-start]   [nil nil]       [nil nil]]
-   :ws-char     [[nil nil]             [nil nil]          [nil form-end]  [nil nil]]
-   :other-char  [[:o-frm form-start]   [nil nil]          [nil nil]       [nil nil]]})
+  {; event name  :init                 :p-frm             :o-form         :d-frm             :error
+   :close-paren [[:p-frm form-end]     [nil form-end]     [nil nil]       [nil nil]          [nil nil]]
+   :open-paren  [[:p-frm form-start]   [nil form-start]   [nil nil]       [nil nil]          [nil nil]]
+   :ws-char     [[nil nil]             [nil nil]          [nil form-end]  [nil nil]          [nil nil]]
+   :other-char  [[:o-frm form-start]   [nil nil]          [nil nil]       [nil nil]          [nil nil]]})
 
 (defn set-state
   "Replace current state with new-state, if new-state is not nil"
@@ -67,8 +68,8 @@
   and return the next state."
   [context matrix evt-name]
   (let [[next-state action] (state-pair evt-name context matrix)]
-    (prn "current state is:" (cur-state context))
-    (prn "next state is: " next-state)
+    #_(prn "current state is:" (cur-state context))
+    #_(prn "next state is: " next-state)
     (when action (action context))
     next-state))
 
@@ -100,11 +101,12 @@
 
   (find-form-start "[] (+ 20 20)" 12)
 
+  (time (find-form-start "[] (+ 20 20)" 12))
+
   (def expr "abc (+ 20 20)")
   (def expr "  *ns*")
-
-  (.length expr)
-
+  (def expr "{:a 1 :b 2}")
+  
   (find-form-start expr (.length expr))
 
   (reverse "(+ 20 20)")

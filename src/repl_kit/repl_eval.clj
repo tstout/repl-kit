@@ -49,6 +49,13 @@
   (send-form conn code)
   (read-response conn))
 
+(defn repl-init 
+  "Startup a prepl server and return a connection to it."
+  []
+  (start-repl-server)
+  (connect-to-prepl "localhost" 5555))
+
+
 (comment
   
   ;; TODO cleanup all
