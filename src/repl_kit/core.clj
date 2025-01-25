@@ -78,7 +78,7 @@
         sp        (mig-panel :constraints ["" "[][grow]" "[80%][20%]"]
                              :border [(line-border :thickness 1) 5]
                              :items [[ (RTextScrollPane. ta true) "span, grow"]
-                                     [ :separator         "growx, wrap"]
+                                     #_[ :separator         "growx, wrap"]
                                      [ (scrollable lw)     "span, grow"]]) 
         ops       {:get-text  (fn [] (.getText ta))
                    :show      (fn [] (fr :show))
