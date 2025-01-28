@@ -96,6 +96,21 @@
       (dec-offset ctxt))
     ctxt))
 
+(defn form-txt
+  "Given a text area, determine the top-most form based on current cursor
+   position."
+  [txt-area]
+  (let [dot         (-> txt-area
+                        .getCaret
+                        .getDot)
+        txt         (.getText txt-area)
+        f-info      (find-form-start (.getText txt-area) dot)
+        offset      (:offset @f-info)
+        init-offset (:init-offset @f-info)]
+    (subs txt offset init-offset)))
+
+
+
 (comment
   (def ctxt (atom {:offset 20}))
 

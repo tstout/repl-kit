@@ -2,7 +2,7 @@
   (:require [clojure.tools.cli :refer [parse-opts]]
             [repl-kit.theme :refer [apply-dark-theme]]
             [repl-kit.repl-eval :refer [repl-init do-eval]]
-             [repl-kit.form-parse :refer [find-form-start]]
+             [repl-kit.form-parse :refer [form-txt]]
             [seesaw.keymap :refer [map-key]]
             [seesaw.core :refer [show!
                                  frame
@@ -54,18 +54,7 @@
                             content)}]
     (fn [operation & args] (-> (ops operation) (apply args)))))
 
-(defn form-txt
-  "Given a text area, determine the top-most form based on current cursor
-   position."
-  [txt-area]
-  (let [dot         (-> txt-area
-                        .getCaret
-                        .getDot)
-        txt         (.getText txt-area)
-        f-info      (find-form-start (.getText txt-area) dot)
-        offset      (:offset @f-info)
-        init-offset (:init-offset @f-info)]
-    (subs txt offset init-offset)))
+
 
 (defn mk-app 
   "Main application closure. Operations available from the returned fn:
@@ -73,13 +62,17 @@
    :get-text - String containing current text area content"
   []
   (let [fr        (mk-frame)
-        lw        (log-window)
-        ta        (text-area :syntax :clojure :editable? true :minimum-size [2048 :by 2048])
+        lw        (log-window :auto-scroll? true 
+                              :background  :black  
+                              :foreground :white)
+        ta        (text-area :syntax :clojure 
+                             :editable? true 
+                             :minimum-size [2048 :by 2048])
         sp        (mig-panel :constraints ["" "[][grow]" "[80%][20%]"]
                              :border [(line-border :thickness 1) 5]
                              :items [[ (RTextScrollPane. ta true) "span, grow"]
                                      #_[ :separator         "growx, wrap"]
-                                     [ (scrollable lw)     "span, grow"]]) 
+                                     [ (scrollable lw)     "span, grow"]])
         ops       {:get-text  (fn [] (.getText ta))
                    :show      (fn [] (fr :show))
                    :load-file (fn [file] (.setText ta (slurp file)))
@@ -94,13 +87,11 @@
              (fn [e] 
                (let [txt (form-txt ta)
                      result (do-eval repl-conn (form-txt ta))]
-                 (log lw (format "%s]n" txt))
-                 (log lw (format "> %s\n" (pr-str result))))))
+                 (log lw (format "%s]\n" txt))
+                 (log lw (format "%s> %s\n" (str *ns*) (pr-str result))))))
     #_(listen ta #{:key-typed :property-change} (fn [e] (prn (bean e))))
     (log lw "REPL-KIT V1.0.4\n")
     (fn [operation & args] (-> (ops operation) (apply args)))))
-
-
 
 
 (defn -main [& args]
@@ -111,73 +102,70 @@
   *e
   (def app (mk-app))
 
+  ;; hello
+
   (app :get-text)
   (app :show)
   (app :get-text)
-
   
   
-  (form-txt (app :get-ta))
-  ;;(def tokens
-    
-    
-    ;;(count tokens)
+  (form-start (app :get-ta))
+  
+  (.getLineCount (app :get-ta))
+  (.getLineStartOffsetOfCurrentLine (app :get-ta))
+  ()
 
-    ;;(first tokens)
+  (def ta (app :get-ta))
 
-    (.getLineCount (app :get-ta))
-    (.getLineStartOffsetOfCurrentLine (app :get-ta))
-    ()
+  (->> ta 
+       tokens 
+       (filter #(false? (.isCommentOrWhitespace %)))) 
 
-    (def ta (app :get-ta))
+  
+  (tokens ta)
+  (.getDocument ta)
+  (bean ta)
+  (bean (app :get-ta))
 
-    (->> ta 
-         tokens 
-         (filter #(false? (.isCommentOrWhitespace %)))) 
-
-    
-    (tokens ta)
-    (.getDocument ta)
-    (bean ta)
-    (bean (app :get-ta))
-
-    (.getParserCount ta)
+  (.getParserCount ta)
 
 
-    (-> (app :get-ta) bean :highlighter bean)
-    (type (app :get-ta))
+  (-> (app :get-ta) bean :highlighter bean)
+  (type (app :get-ta))
 
-    *ns*
+  *ns*
 
-    (-> .getX (.getCaret (app :get-ta)))
+  (-> .getX (.getCaret (app :get-ta)))
 
-    (bean (:caret (bean (app :get-ta))))
-    
-    (-> :get-ta
-        app
-        .getCaret 
-        .getDot)
+  (bean (:caret (bean (app :get-ta))))
+  
+  (-> :get-ta
+      app
+      .getCaret 
+      .getDot)
 
-    (caret-coords (app :get-ta))
+  (caret-coords (app :get-ta))
 
-    (.getCaretOffsetFromLineStart (app :get-ta))
-    (show-events (app :get-ta))
-    (show-options (app :get-ta))
+  (.getCaretOffsetFromLineStart (app :get-ta))
+  (show-events (app :get-ta))
+  (show-options (app :get-ta))
 
-    (app :load-file "pom.xml")
-
-
-
-    (.setText (app :get-ta) (slurp "deps.edn"))
+  (app :load-file "pom.xml")
 
 
-    (range 10)
+  (str *ns*)
 
-    (app :log "Hello..\n")
-    (app :clear-log)
-    (load-file)
-    (show-events (frame))
-    (show-events (seesaw.rsyntax/text-area :syntax :clojure :editable? true))
-    (show-options (seesaw.rsyntax/text-area :syntax :clojure :editable? true))
+  (.setText (app :get-ta) (slurp "deps.edn"))
+
+
+  (range 10)
+
+  (app :log "Hello..\n")
+  (app :clear-log)
+  (load-file)
+  (show-events (frame))
+  (show-options (log-window))
+  (show-events (seesaw.rsyntax/text-area :syntax :clojure :editable? true)) 
+  (show-options (seesaw.rsyntax/text-area :syntax :clojure :editable? true))
   ;;
-    )
+  )
