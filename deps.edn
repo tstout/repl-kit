@@ -1,4 +1,8 @@
-{:aliases {:repl-kit {:main-opts ["-m" "repl-kit.core"]}
+{:deps    {org.clojure/tools.cli         {:mvn/version "0.3.5"}
+           seesaw/seesaw                 {:mvn/version "1.5.0"}
+           io.github.clojure/tools.build {:git/tag "v0.8.1"
+                                          :git/sha "7d40500"}}
+ :aliases {:repl-kit {:main-opts ["-m" "repl-kit.core"]}
            :build    {:deps       {io.github.clojure/tools.build {:git/tag "v0.8.1"
                                                                   :git/sha "7d40500"}}
                       :ns-default build}
@@ -13,7 +17,5 @@
                                                                            :git/sha "dfb30dd"}}
                       :extra-paths ["test"]
                       :main-opts   ["-m" "cognitect.test-runner" "-d" "test"]}}
- :paths   ["resources" "src"]
- :deps    {org.clojure/tools.cli {:mvn/version "0.3.5"}
-           seesaw/seesaw         {:mvn/version "1.5.0"}}}
+ :paths   ["resources" "src"]}
  

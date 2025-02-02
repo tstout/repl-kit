@@ -67,7 +67,7 @@
         ta        (text-area :syntax :clojure 
                              :editable? true 
                              :minimum-size [2048 :by 2048])
-        sp        (mig-panel :constraints ["" "[][grow]" "[80%][20%]"]
+        sp        (mig-panel :constraints ["" "[][grow]" "[70%][30%]"]
                              :border [(line-border :thickness 1) 5]
                              :items [[ (RTextScrollPane. ta true) "span, grow"]
                                      #_[ :separator         "growx, wrap"]

@@ -6,9 +6,6 @@
             [seesaw.chooser :refer [choose-file]]
             [seesaw.widgets.log-window :refer [log]]))
 
-#_(fn [file] (.setText ta (slurp file)))
-
-
 ;; TODO - need to determine best approach to set classpath
 ;; after loading a file, perhaps just do it when deps.edn loaded.
 
@@ -37,11 +34,10 @@
                (let [txt    (form-txt txt-area)
                      result (do-eval repl-conn (form-txt txt-area))]
                  (log log-window (format "%s]\n" txt))
-                 (log log-window (format "%s> %s\n" (str *ns*) (pr-str result))))))))
+                 (log log-window (format "%s> %s\n" *ns* (pr-str result))))))))
 
 
 (comment 
   (keystroke "control O")
-  (update-in)
   ;;
   )
