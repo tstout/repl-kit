@@ -13,20 +13,24 @@
 ;; after loading a file, perhaps just do it when deps.edn loaded.
 
 (defn configure-key-map [m]
-  (let [{:keys [txt-area log-window repl-conn]} m]
-    ;; (map-key txt-area
-    ;;          "control S"
-    ;;          )
-
+  (let [{:keys [txt-area log-window repl-conn]} m
+        state                                   (atom {:dirty false
+                                                       :file  nil})]
+    (map-key txt-area
+             "control S"
+             (fn [_]
+               (when-let [file (@state :file)]
+                 (log log-window (format "saving file %s\n" file))
+                 (spit file (.getText txt-area)))))
+    
     (map-key txt-area 
              "control O" 
              (fn [_] 
-               (log log-window "control-o\n")
-               (choose-file :success-fn (fn [fc file] 
-                                          #_(log log-window (format "File Type: %s - %s\n" 
-                                                                  (type file)
-                                                                  (.getAbsolutePath file)))
-                                          (.setText txt-area (slurp (.getAbsolutePath file)))))))
+               (choose-file :success-fn (fn [_ file] 
+                                          (let [path (.getAbsolutePath file)]
+                                            (swap! state assoc :file path)
+                                            (log log-window (format "loading file: %s\n" path))
+                                            (.setText txt-area (slurp path)))))))
     (map-key txt-area
              "control ENTER"
              (fn [_]
@@ -38,5 +42,6 @@
 
 (comment 
   (keystroke "control O")
+  (update-in)
   ;;
   )
