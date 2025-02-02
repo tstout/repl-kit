@@ -1,9 +1,8 @@
 (ns repl-kit.core
   (:require [clojure.tools.cli :refer [parse-opts]]
             [repl-kit.theme :refer [apply-dark-theme]]
-            [repl-kit.repl-eval :refer [repl-init do-eval]]
-             [repl-kit.form-parse :refer [form-txt]]
-            [seesaw.keymap :refer [map-key]]
+            [repl-kit.key-map :refer [configure-key-map]]
+            [repl-kit.repl-eval :refer [repl-init]] 
             [seesaw.core :refer [show!
                                  frame
                                  text
@@ -82,13 +81,9 @@
         repl-conn (repl-init)]
     (fr :set-content sp)
     (apply-dark-theme ta)
-    (map-key ta 
-             "control ENTER"
-             (fn [e] 
-               (let [txt (form-txt ta)
-                     result (do-eval repl-conn (form-txt ta))]
-                 (log lw (format "%s]\n" txt))
-                 (log lw (format "%s> %s\n" (str *ns*) (pr-str result))))))
+    (configure-key-map {:txt-area   ta 
+                        :log-window lw 
+                        :repl-conn  repl-conn}) 
     #_(listen ta #{:key-typed :property-change} (fn [e] (prn (bean e))))
     (log lw "REPL-KIT V1.0.4\n")
     (fn [operation & args] (-> (ops operation) (apply args)))))
@@ -109,17 +104,7 @@
   (app :get-text)
   
   
-  (form-start (app :get-ta))
   
-  (.getLineCount (app :get-ta))
-  (.getLineStartOffsetOfCurrentLine (app :get-ta))
-  ()
-
-  (def ta (app :get-ta))
-
-  (->> ta 
-       tokens 
-       (filter #(false? (.isCommentOrWhitespace %)))) 
 
   
   (tokens ta)
