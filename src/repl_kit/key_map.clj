@@ -8,6 +8,8 @@
 
 ;; TODO - need to determine best approach to set classpath
 ;; after loading a file, perhaps just do it when deps.edn loaded.
+;; look at new 1.12.0 lib features
+;; https://clojure.org/news/2024/09/05/clojure-1-12-0
 
 (defn configure-key-map [m]
   (let [{:keys [txt-area log-window repl-conn]} m
@@ -34,7 +36,7 @@
                (let [txt    (form-txt txt-area)
                      result (do-eval repl-conn (form-txt txt-area))]
                  (log log-window (format "%s]\n" txt))
-                 (log log-window (format "%s> %s\n" *ns* (pr-str result))))))))
+                 (log log-window (format "%s> %s\n" (:ns result) (pr-str result))))))))
 
 
 (comment 

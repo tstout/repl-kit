@@ -16,3 +16,4 @@ pom.xml.asc
 .lsp
 .vscode
 dependency-reduced-pom.xml
+.rebel_readline_history

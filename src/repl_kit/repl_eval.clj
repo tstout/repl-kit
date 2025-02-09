@@ -43,8 +43,10 @@
 (defn repl-init 
   "Startup a prepl server and return a connection to it."
   []
+  (alter-var-root #'*repl* (constantly true)) ;; Bug work-around
+  (require '[clojure.repl.deps :refer :all])
   (start-repl-server)
-  (connect-to-prepl "localhost" 5555))
+  (connect-to-prepl "localhost" 5555)) 
 
 (comment
   
