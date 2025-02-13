@@ -34,7 +34,7 @@
              "control ENTER"
              (fn [_]
                (let [txt    (form-txt txt-area)
-                     result (do-eval repl-conn (form-txt txt-area))]
+                     result (do-eval repl-conn txt)]
                  (log log-window (format "%s]\n" txt))
                  (log log-window (format "%s> %s\n" (:ns result) (pr-str result))))))))
 
