@@ -15,6 +15,17 @@
   (let [{:keys [txt-area log-window repl-conn]} m
         state                                   (atom {:dirty false
                                                        :file  nil})]
+    ;; TODO put a partial fn to prevent need to specify log-window everywhere
+    (map-key txt-area
+             "control E"
+             (fn [_]
+               (when-let [file (@state :file)]
+                 (log log-window (format "eval file %s\n" file))
+                 (let [result (do-eval 
+                               repl-conn 
+                               (format "(load-file \"%s\")" file))]
+                   (log log-window (format "%s> %s\n" (:ns result) (pr-str result)))))))
+
     (map-key txt-area
              "control S"
              (fn [_]
