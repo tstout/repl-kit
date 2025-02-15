@@ -12,12 +12,14 @@
 ;; https://clojure.org/news/2024/09/05/clojure-1-12-0
 
 (defn configure-key-map [m]
-  (let [{:keys [txt-area log-window repl-conn]} m
+  (let [{:keys [txt-area log-window repl-conn top-label]} m
         state                                   (atom {:dirty false
                                                        :file  nil})]
     ;; TODO put a partial fn to prevent need to specify log-window everywhere
     (map-key txt-area
              "control E"
+             ;; TODO - when loading entire file, need to change ns to the
+             ;; file. Is using file name sufficient to determine ns?
              (fn [_]
                (when-let [file (@state :file)]
                  (log log-window (format "eval file %s\n" file))
@@ -39,6 +41,7 @@
                (choose-file :success-fn (fn [_ file] 
                                           (let [path (.getAbsolutePath file)]
                                             (swap! state assoc :file path)
+                                            (.setText top-label path)
                                             (log log-window (format "loading file: %s\n" path))
                                             (.setText txt-area (slurp path)))))))
     (map-key txt-area

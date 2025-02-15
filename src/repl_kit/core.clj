@@ -5,6 +5,7 @@
             [repl-kit.repl-eval :refer [repl-init]] 
             [seesaw.core :refer [show!
                                  frame
+                                 label
                                  text
                                  vertical-panel
                                  config!
@@ -61,15 +62,17 @@
    :get-text - String containing current text area content"
   []
   (let [fr        (mk-frame)
+        top-label (label :text "")
         lw        (log-window :auto-scroll? true 
                               :background  :black  
                               :foreground :white)
         ta        (text-area :syntax :clojure 
                              :editable? true 
                              :minimum-size [2048 :by 2048])
-        sp        (mig-panel :constraints ["" "[][grow]" "[70%][30%]"]
+        sp        (mig-panel :constraints ["" "[][][grow]" "[][70%][30%]"]
                              :border [(line-border :thickness 1) 5]
-                             :items [[ (RTextScrollPane. ta true) "span, grow"]
+                             :items [[ top-label "span, grow"]
+                                     [ (RTextScrollPane. ta true) "span, grow"]
                                      #_[ :separator         "growx, wrap"]
                                      [ (scrollable lw)     "span, grow"]])
         ops       {:get-text  (fn [] (.getText ta))
@@ -82,7 +85,8 @@
     (fr :set-content sp)
     (apply-dark-theme ta)
     (configure-key-map {:txt-area   ta 
-                        :log-window lw 
+                        :log-window lw
+                        :top-label  top-label
                         :repl-conn  repl-conn}) 
     #_(listen ta #{:key-typed :property-change} (fn [e] (prn (bean e))))
     (log lw "REPL-KIT V1.0.4\n")
