@@ -102,7 +102,7 @@
   [txt-area]
   (let [dot         (-> txt-area
                         .getCaret
-                        .getDot)
+                        .getDot) 
         txt         (.getText txt-area)
         f-info      (find-form-start (.getText txt-area) dot)
         offset      (:offset @f-info)

@@ -29,14 +29,17 @@
   (let [{:keys [writer]} connection]
     (.println writer (if (string? form) 
                        form 
-                       (pr-str form))))) 
+                       (pr-str form)))
+    (.flush writer))) 
 
 (defn read-response [connection]
   (let [{:keys [reader]} connection]
+    #_(.flush reader)
     (when-let [line (.readLine reader)]
       (edn/read-string {:default tagged-literal} line)))) 
 
 (defn do-eval [conn code]
+  #_(println (format "code in eval is '%s'" code))
   (send-form conn code)
   (read-response conn))
 
