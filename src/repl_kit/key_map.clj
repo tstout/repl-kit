@@ -26,7 +26,7 @@
                  (let [result (do-eval 
                                repl-conn 
                                (format "(load-file \"%s\")" file))]
-                   (log-w (format "%s> %s\n" (:ns result) (pr-str result)))))))
+                   (log-w (format "%s> %s\n" (:ns result) (pr-str (:val result))))))))
 
     (map-key txt-area
              "control S"
@@ -51,7 +51,7 @@
                (let [txt    (form-txt txt-area)
                      result (do-eval repl-conn txt)]
                  (log-w (format "%s]\n" txt))
-                 (log-w (format "%s> %s\n" (:ns result) (pr-str result))))))))
+                 (log-w (format "%s> %s\n" (:ns result) (:val result))))))))
 
 
 (comment 
