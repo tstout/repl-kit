@@ -89,7 +89,7 @@
                         :top-label  top-label
                         :repl-conn  repl-conn}) 
     #_(listen ta #{:key-typed :property-change} (fn [e] (prn (bean e))))
-    (log lw "REPL-KIT V1.0.4\n")
+    (log lw "REPL-KIT v1.0.5\n")
     (fn [operation & args] (-> (ops operation) (apply args)))))
 
 
