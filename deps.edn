@@ -1,10 +1,8 @@
 {:deps    {org.clojure/tools.cli         {:mvn/version "0.3.5"}
-           seesaw/seesaw                 {:mvn/version "1.5.0"}
-           io.github.clojure/tools.build {:git/tag "v0.8.1"
-                                          :git/sha "7d40500"}}
+           seesaw/seesaw                 {:mvn/version "1.5.0"}}
  :aliases {:repl-kit {:main-opts ["-m" "repl-kit.core"]}
-           :build    {:deps       {io.github.clojure/tools.build {:git/tag "v0.8.1"
-                                                                  :git/sha "7d40500"}}
+           :build    {:deps       {io.github.clojure/tools.build {:git/tag "v0.10.7"
+                                                                  :git/sha "573711e"}}
                       :ns-default build}
            :dev      {:extra-paths ["dev"]}
            :test     {:extra-paths ["test" "test/resources"]

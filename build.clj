@@ -3,7 +3,8 @@
                                              compile-clj
                                              git-count-revs
                                              create-basis
-                                             copy-dir uber]]))
+                                             copy-dir 
+                                             uber]]))
 
 (def version (format "1.0.%s" (git-count-revs nil)))
 
@@ -17,6 +18,7 @@
 
 (defn uberjar [_]
   (clean nil)
+  (println (format "Clojure Version: %s" (clojure-version)))
   (copy-dir {:target-dir class-dir
              :src-dirs   ["src" "resources"]})
   (compile-clj {:basis     basis
