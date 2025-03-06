@@ -1,5 +1,7 @@
-{:deps    {org.clojure/tools.cli         {:mvn/version "0.3.5"}
-           seesaw/seesaw                 {:mvn/version "1.5.0"}}
+{:deps    {org.clojure/tools.cli  {:mvn/version "0.3.5"}
+           seesaw/seesaw          {:mvn/version "1.5.0"}
+           zprint/zprint          {:mvn/version "1.2.4"}
+           #_#_dev.weavejester/cljfmt {:mvn/version "0.13.0"}}
  :aliases {:repl-kit {:main-opts ["-m" "repl-kit.core"]}
            :build    {:deps       {io.github.clojure/tools.build {:git/tag "v0.10.7"
                                                                   :git/sha "573711e"}}

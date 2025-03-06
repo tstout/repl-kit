@@ -1,23 +1,22 @@
 (ns repl-kit.form-parse)
 
-
 (defn dec-offset [ctxt]
-  (swap! ctxt #(assoc 
-                % 
-                :offset 
+  (swap! ctxt #(assoc
+                %
+                :offset
                 (dec (@ctxt :offset)))))
 
 (defn inc-form-start [ctxt]
   (swap! ctxt #(assoc
-                 %
-                 :form-start
-                 (inc (@ctxt :form-start)))))
+                %
+                :form-start
+                (inc (@ctxt :form-start)))))
 
 (defn inc-form-end [ctxt]
   (swap! ctxt #(assoc
-                 %
-                 :form-end
-                 (inc (@ctxt :form-end)))))
+                %
+                :form-end
+                (inc (@ctxt :form-end)))))
 
 (defn form-start-found? [ctxt]
   (let [{:keys [form-start form-end]} @ctxt]
@@ -28,7 +27,6 @@
 
 (defn form-end [ctxt]
   (inc-form-end ctxt))
-
 
 (def states
   "Maps state names to matrix index"
@@ -78,12 +76,12 @@
                     :current-state :init
                     :form-start    0
                     :form-end      0
-                    :offset        init-offset})] 
+                    :offset        init-offset})]
     (doseq [c      (reverse (subs txt 0 init-offset))
             :while (not (form-start-found? ctxt))]
-      (->> (invoke-action 
-            ctxt 
-            state-matrix 
+      (->> (invoke-action
+            ctxt
+            state-matrix
             (case c
               \(       :open-paren
               \)       :close-paren
@@ -102,14 +100,12 @@
   [txt-area]
   (let [dot         (-> txt-area
                         .getCaret
-                        .getDot) 
+                        .getDot)
         txt         (.getText txt-area)
         f-info      (find-form-start (.getText txt-area) dot)
         offset      (:offset @f-info)
         init-offset (:init-offset @f-info)]
     (subs txt offset init-offset)))
-
-
 
 (comment
   (def ctxt (atom {:offset 20}))
@@ -121,12 +117,12 @@
   (def expr "abc (+ 20 20)")
   (def expr "  *ns*")
   (def expr "{:a 1 :b 2}")
-  
+
   (find-form-start expr (.length expr))
 
   (reverse "(+ 20 20)")
-  \)
   (nth "012345" 5)
+
   (dec-offset ctxt)
 
   (reverse (subs "(+ 20 20)" 0 8))
@@ -138,7 +134,5 @@
   (doseq [c "abc"]
     (prn c))
 
-
-
-  ;;
+;;
   )

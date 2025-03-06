@@ -1,6 +1,8 @@
 (ns repl-kit.key-map
-  (:require [seesaw.keymap :refer [map-key]]
+  (:require [seesaw.keymap :refer [map-key]] 
+            [clojure.java.io :as io]
             [repl-kit.form-parse :refer [form-txt]]
+            [zprint.core :as zp]
             [repl-kit.repl-eval :refer [do-eval]]
             [seesaw.keystroke :refer [keystroke]]
             [seesaw.chooser :refer [choose-file]]
@@ -13,9 +15,25 @@
 
 (defn configure-key-map [m]
   (let [{:keys [txt-area log-window repl-conn top-label]} m
-        state                                   (atom {:dirty false
-                                                       :file  nil})
-        log-w (partial log log-window)] 
+        state                                             (atom {:dirty false
+                                                                 :file  nil})
+        log-w                                             (partial log log-window)] 
+    (map-key txt-area 
+             "control F"
+             (fn [_]
+               (let [rstr (zp/zprint-file-str  
+                           (.getText txt-area)
+                           nil
+                           nil
+                           nil)]
+                 (.setText txt-area rstr) 
+                 (log-w "ctrl-F\n"))))
+    
+    #_(map-key txt-area
+             "control F"
+             (fn [_] 
+                 (log-w "ctrl-/\n")))
+    
     (map-key txt-area
              "control E"
              ;; TODO - when loading entire file, need to change ns to the
@@ -53,8 +71,62 @@
                  (log-w (format "%s]\n" txt))
                  (log-w (format "%s> %s\n" (:ns result) (:val result))))))))
 
+(defn fmt-str [s]
+  (with-out-str 
+    (zp/zprint s)))
 
-(comment 
+
+
+(comment
   (keystroke "control O")
+
+  (zp/zprint-str (slurp "/Users/tstout/src/sample-proj/deps.edn"))
+
+  ;; (def fstr (zp/zprint-file-str
+  ;;            (slurp "/Users/tstout/src/sample-proj/deps.edn")
+  ;;            "deps.edn"))
+
+  
+
+  ;; from source of zprint
+  ;; This seems to do what I need - generate a
+  ;; formatted string suitable for writing to a file.
+  ;; See if setting the textarea text to this works. It should.
+  (def fstr (zp/zprint-file-str 
+             (slurp "/Users/tstout/src/sample-proj/deps.edn")
+             nil
+             nil
+             nil))
+
+(spit "fmt.edn" fstr)
+
+
+  ;;(fmt-str (slurp "/Users/tstout/src/sample-proj/deps.edn"))
+
+
+  ;;(require '[cljfmt.core :as fmt])
+
+  ;; (fmt/reformat-string 
+  ;;  (slurp "/Users/tstout/src/sample-proj/deps.edn"))
+  
+  ;;(fmt/reindent)
+
+  (zp/zprint-file
+   "/Users/tstout/src/sample-proj/deps.edn"
+   "fmt.edn"
+   "fmt.edn")
+
+  (with-out-str
+    (zp/czprint "{:a 1, :c 1}"))
+
+
+  (slurp "/Users/tstout/src/sample-proj/deps.edn")
+
+  (zp/zprint "{:a 1}")
+
+
+
+  (reformat-string "{:a 1, 
+                          :b 2}")
   ;;
   )
