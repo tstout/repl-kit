@@ -13,6 +13,18 @@
 ;; look at new 1.12.0 lib features
 ;; https://clojure.org/news/2024/09/05/clojure-1-12-0
 
+(def fmt-opts
+  {:width  100
+   :map    {:comma?   false
+            :sort?    true
+            :indent   2
+            :justify? true}
+   :list   {:indent 1 
+            :hang? false}
+   :vector {:indent 1} 
+   :style  [:community]})
+
+
 (defn configure-key-map [m]
   (let [{:keys [txt-area log-window repl-conn top-label]} m
         state                                             (atom {:dirty false
@@ -24,14 +36,13 @@
                (let [rstr (zp/zprint-file-str  
                            (.getText txt-area)
                            nil
-                           nil
-                           nil)]
+                           fmt-opts)]
                  (.setText txt-area rstr) 
-                 (log-w "ctrl-F\n"))))
+                 (log-w "Formatting file...\n"))))
     
     #_(map-key txt-area
-             "control F"
-             (fn [_] 
+               "control F"
+               (fn [_] 
                  (log-w "ctrl-/\n")))
     
     (map-key txt-area
@@ -44,7 +55,9 @@
                  (let [result (do-eval 
                                repl-conn 
                                (format "(load-file \"%s\")" file))]
-                   (log-w (format "%s> %s\n" (:ns result) (pr-str (:val result))))))))
+                   (log-w (format "%s> %s\n" 
+                                  (:ns result) 
+                                  (pr-str (:val result))))))))
 
     (map-key txt-area
              "control S"
@@ -69,13 +82,12 @@
                (let [txt    (form-txt txt-area)
                      result (do-eval repl-conn txt)]
                  (log-w (format "%s]\n" txt))
-                 (log-w (format "%s> %s\n" (:ns result) (:val result))))))))
-
-(defn fmt-str [s]
-  (with-out-str 
-    (zp/zprint s)))
-
-
+                 (log-w (format "%s> %s\n" 
+                                (:ns result)
+                                (zp/zprint-file-str
+                                 (:val result)
+                                 nil
+                                 fmt-opts))))))))
 
 (comment
   (keystroke "control O")
@@ -85,7 +97,7 @@
   ;; (def fstr (zp/zprint-file-str
   ;;            (slurp "/Users/tstout/src/sample-proj/deps.edn")
   ;;            "deps.edn"))
-
+  
   
 
   ;; from source of zprint
@@ -98,19 +110,27 @@
              nil
              nil))
 
-(spit "fmt.edn" fstr)
+  (spit "fmt.edn" fstr)
+  
+  (->> (all-ns)
+       (map ns-name)
+       (map name))
+
+  
+  
+  (all-ns)  
 
 
   ;;(fmt-str (slurp "/Users/tstout/src/sample-proj/deps.edn"))
-
+  
 
   ;;(require '[cljfmt.core :as fmt])
-
+  
   ;; (fmt/reformat-string 
   ;;  (slurp "/Users/tstout/src/sample-proj/deps.edn"))
   
   ;;(fmt/reindent)
-
+  
   (zp/zprint-file
    "/Users/tstout/src/sample-proj/deps.edn"
    "fmt.edn"

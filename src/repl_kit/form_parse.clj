@@ -107,8 +107,14 @@
         init-offset (:init-offset @f-info)]
     (subs txt offset init-offset)))
 
+
+
+(defn foom []
+  (range 1 50))
+
 (comment
   (def ctxt (atom {:offset 20}))
+  (foom)
 
   (find-form-start "[] (+ 20 20)" 12)
 
@@ -133,6 +139,10 @@
 
   (doseq [c "abc"]
     (prn c))
+
+ (->> (all-ns)
+     (map ns-name)
+     (map name))  
 
 ;;
   )
