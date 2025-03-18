@@ -1,5 +1,6 @@
 (ns repl-kit.core
   (:require [clojure.tools.cli :refer [parse-opts]]
+            [clojure.java.io :as io]
             [repl-kit.theme :refer [apply-dark-theme]]
             [repl-kit.key-map :refer [configure-key-map]]
             [repl-kit.repl-eval :refer [repl-init]] 
@@ -19,6 +20,7 @@
             [seesaw.dev :refer [show-events show-options]])
   (:import [org.fife.ui.rtextarea RTextScrollPane])
   (:gen-class))
+
 
 (def notes 
   "For showing results of REPL evaluation consider using 
@@ -89,7 +91,8 @@
                         :top-label  top-label
                         :repl-conn  repl-conn}) 
     #_(listen ta #{:key-typed :property-change} (fn [e] (prn (bean e))))
-    (log lw "REPL-KIT v1.0.5\n")
+    #_(log lw "REPL-KIT v1.0.5\n")
+    (log lw (-> "help.txt" io/resource slurp))
     (fn [operation & args] (-> (ops operation) (apply args)))))
 
 

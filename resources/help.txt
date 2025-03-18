@@ -1,0 +1,14 @@
+                    _         _     _  _   
+ _ __   ___  _ __  | |       | | __(_)| |_ 
+| '__| / _ \| '_ \ | | _____ | |/ /| || __|
+| |   |  __/| |_) || ||_____||   < | || |_ 
+|_|    \___|| .__/ |_|       |_|\_\|_| \__|
+            |_|                            
+1.0.6
+
+control-o      Open File
+control-s      Save File
+control-enter  Eval current form
+control-l      Load file (current buffer)
+control-f      Format file (current buffer)
+control-h      Show this help

@@ -16,11 +16,11 @@
 
 
 
-
-
 (comment
   ;; test
+  
   *e
+  
   (ns-exists? "repl-kit.ns-util")
   (ls-ns)
 
@@ -29,15 +29,5 @@
   (keys (ns-publics 'repl-kit.ns-util))
   (in-ns 'repl-kit.ns-util)
 
-  (+ 6 35 26 24 82 55 46 56 52 48 27 15)
-
-  (/ 330 60)
-
-  (/ 472 60)
-
-  
-
-
-  
   ;;
   )
