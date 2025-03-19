@@ -56,8 +56,6 @@
                             content)}]
     (fn [operation & args] (-> (ops operation) (apply args)))))
 
-
-
 (defn mk-app 
   "Main application closure. Operations available from the returned fn:
    :get-ta - acquire reference to the RSyntaxTextArea
@@ -102,56 +100,18 @@
 
 (comment
   *e
+  *1
   (def app (mk-app))
 
   ;; hello
 
   (app :get-text)
   (app :show)
-  (app :get-text)
+  (app :get-text)`
   
-  
-  
-
-  
-  (tokens ta)
-  (.getDocument ta)
-  (bean ta)
-  (bean (app :get-ta))
-
-  (.getParserCount ta)
-
-
-  (-> (app :get-ta) bean :highlighter bean)
-  (type (app :get-ta))
-
   *ns*
 
-  (-> .getX (.getCaret (app :get-ta)))
-
-  (bean (:caret (bean (app :get-ta))))
-  
-  (-> :get-ta
-      app
-      .getCaret 
-      .getDot)
-
-  (caret-coords (app :get-ta))
-
-  (.getCaretOffsetFromLineStart (app :get-ta))
-  (show-events (app :get-ta))
-  (show-options (app :get-ta))
-
-  (app :load-file "pom.xml")
-
-
-  (str *ns*)
-
-  (.setText (app :get-ta) (slurp "deps.edn"))
-
-
   (range 10)
-
   (app :log "Hello..\n")
   (app :clear-log)
   (load-file)

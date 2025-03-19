@@ -6,9 +6,10 @@
             |_|                            
 1.0.6
 
-control-o      Open File
-control-s      Save File
-control-enter  Eval current form
-control-l      Load file (current buffer)
-control-f      Format file (current buffer)
-control-h      Show this help
+ctrl-o      Open File
+ctrl-s      Save File
+ctrl-enter  Eval current form
+ctrl-l      Load file (current buffer)
+ctrl-f      Format file (current buffer)
+ctrl-h      Show this help
+ctrl-c      Clear log window
