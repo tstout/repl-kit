@@ -6,7 +6,7 @@
             [repl-kit.repl-eval :refer [do-eval]]
             [seesaw.keystroke :refer [keystroke]]
             [seesaw.chooser :refer [choose-file]]
-            [seesaw.widgets.log-window :refer [log]]))
+            [seesaw.widgets.log-window :refer [log clear]]))
 
 
 
@@ -36,6 +36,11 @@
                            fmt-opts)]
                  (.setText txt-area rstr)
                  (log-w "Formatting file...\n"))))
+    
+    (map-key txt-area
+             "control C"
+             (fn [_]
+               (clear log-window)))
 
     (map-key txt-area
              "control H"
@@ -43,11 +48,6 @@
                (log-w (-> "help.txt" 
                           io/resource 
                           slurp))))
-
-    #_(map-key txt-area
-               "control F"
-               (fn [_]
-                 (log-w "ctrl-/\n")))
 
     (map-key txt-area
              "control L"
@@ -93,21 +93,9 @@
                                  nil
                                  fmt-opts))))))))
 
-(comment
-  (keystroke "control O")
-
+(comment 
   (zp/zprint-str (slurp "/Users/tstout/src/sample-proj/deps.edn"))
-
-  ;; (def fstr (zp/zprint-file-str
-  ;;            (slurp "/Users/tstout/src/sample-proj/deps.edn")
-  ;;            "deps.edn"))
   
-  
-
-  ;; from source of zprint
-  ;; This seems to do what I need - generate a
-  ;; formatted string suitable for writing to a file.
-  ;; See if setting the textarea text to this works. It should.
   (def fstr (zp/zprint-file-str 
              (slurp "/Users/tstout/src/sample-proj/deps.edn")
              nil
@@ -119,38 +107,5 @@
   (->> (all-ns)
        (map ns-name)
        (map name))
-
-  
-  
-  (all-ns)  
-
-
-  ;;(fmt-str (slurp "/Users/tstout/src/sample-proj/deps.edn"))
-  
-
-  ;;(require '[cljfmt.core :as fmt])
-  
-  ;; (fmt/reformat-string 
-  ;;  (slurp "/Users/tstout/src/sample-proj/deps.edn"))
-  
-  ;;(fmt/reindent)
-  
-  (zp/zprint-file
-   "/Users/tstout/src/sample-proj/deps.edn"
-   "fmt.edn"
-   "fmt.edn")
-
-  (with-out-str
-    (zp/czprint "{:a 1, :c 1}"))
-
-
-  (slurp "/Users/tstout/src/sample-proj/deps.edn")
-
-  (zp/zprint "{:a 1}")
-
-
-
-  (reformat-string "{:a 1, 
-                          :b 2}")
   ;;
   )
