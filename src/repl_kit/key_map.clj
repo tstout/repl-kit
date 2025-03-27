@@ -83,7 +83,10 @@
     (map-key txt-area
              "control ENTER"
              (fn [_]
-               (let [txt    (form-txt txt-area)
+               (let [txt    (form-txt (.getText txt-area)
+                                      (-> txt-area
+                                          .getCaret
+                                          .getDot))
                      result (do-eval repl-conn txt)]
                  (log-w (format "%s]\n" txt))
                  (log-w (format "%s> %s\n"
