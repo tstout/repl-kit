@@ -12,10 +12,10 @@
                                  config!
                                  listen
                                  scrollable
-                                 ]]
+                                 top-bottom-split]]
             [seesaw.widgets.log-window :refer [log-window log clear]]
             [seesaw.border :refer [line-border]]
-            [seesaw.rsyntax :refer [text-area]]
+            [seesaw.rsyntax :refer [text-area]] 
             [seesaw.mig :refer [mig-panel]]
             [seesaw.dev :refer [show-events show-options]])
   (:import [org.fife.ui.rtextarea RTextScrollPane])
@@ -56,6 +56,13 @@
                             content)}]
     (fn [operation & args] (-> (ops operation) (apply args)))))
 
+(defn mk-split-pane [ta lw]
+  (top-bottom-split
+   (RTextScrollPane. ta true)
+   (scrollable lw)
+   :divider-location 350
+   :one-touch-expandable? true))
+
 (defn mk-app 
   "Main application closure. Operations available from the returned fn:
    :get-ta - acquire reference to the RSyntaxTextArea
@@ -69,12 +76,13 @@
         ta        (text-area :syntax :clojure 
                              :editable? true 
                              :minimum-size [2048 :by 2048])
-        sp        (mig-panel :constraints ["" "[][][grow]" "[][50%][50%]"]
+        sp        (mig-panel :constraints ["" "[][grow]" "[][100%]"]
                              :border [(line-border :thickness 1) 5]
                              :items [[ top-label "span, grow"]
-                                     [ (RTextScrollPane. ta true) "span, grow"]
+                                     [(mk-split-pane ta lw) "span, grow"]
+                                     #_[ (RTextScrollPane. ta true) "span, grow"]
                                      #_[ :separator         "growx, wrap"]
-                                     [ (scrollable lw)     "span, grow"]])
+                                     #_[ (scrollable lw)     "span, grow"]])
         ops       {:get-text  (fn [] (.getText ta))
                    :show      (fn [] (fr :show))
                    :load-file (fn [file] (.setText ta (slurp file)))
