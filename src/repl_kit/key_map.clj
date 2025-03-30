@@ -1,4 +1,5 @@
 (ns repl-kit.key-map
+  (:import [javax.swing KeyStroke])
   (:require [seesaw.keymap :refer [map-key]] 
             [clojure.java.io :as io]
             [repl-kit.form-parse :refer [form-txt]]
@@ -36,6 +37,14 @@
                            fmt-opts)]
                  (.setText txt-area rstr)
                  (log-w "Formatting file...\n"))))
+    
+    (map-key txt-area
+             "control A"
+             (fn [_] (log-w "CTRL A\n")))
+    
+    (map-key txt-area
+             "control Z"
+             (fn [_] (log-w "CTRL Z\n")))
     
     (map-key txt-area
              "control C"
@@ -96,17 +105,21 @@
                                  nil
                                  fmt-opts))))))))
 
-(comment 
+(comment
   (zp/zprint-str (slurp "/Users/tstout/src/sample-proj/deps.edn"))
-  
-  (def fstr (zp/zprint-file-str 
+
+  (def fstr (zp/zprint-file-str
              (slurp "/Users/tstout/src/sample-proj/deps.edn")
              nil
              nil
              nil))
 
   (spit "fmt.edn" fstr)
-  
+  (rem)
+
+  (KeyStroke/getKeyCode "LEFT")
+
+
   (->> (all-ns)
        (map ns-name)
        (map name))
