@@ -5,9 +5,13 @@
 (deftest form-parse-test
   (testing "Parse Form At Current Cursor Position"
     (is (= (form-txt "*ns*" 4)
-           "*ns*"))))
+           "*ns*"))
+    (is (= (form-txt "{:a 1}" 6)
+           "{:a 1}"))
+    (is (= (form-txt "  #[0 1 2]" 10)
+           "[0 1 2]"))))
 
-(comment
+(comment 
   (run-tests)
   ;;
   )

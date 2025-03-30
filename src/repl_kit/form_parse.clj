@@ -39,11 +39,15 @@
 (def state-matrix
   "This matrix maps events to next-state/action pairs based on current state.
    nil values are interpreted as no-ops."
-  {; event name  :init                 :p-frm             :o-form         :d-frm             :error
-   :close-paren [[:p-frm form-end]     [nil form-end]     [nil nil]       [nil nil]          [nil nil]]
-   :open-paren  [[:p-frm form-start]   [nil form-start]   [nil nil]       [nil nil]          [nil nil]]
-   :ws-char     [[nil nil]             [nil nil]          [nil form-end]  [nil nil]          [nil nil]]
-   :other-char  [[:o-frm form-start]   [nil nil]          [nil nil]       [nil nil]          [nil nil]]})
+  {; event name  :init                   :p-frm             :o-frm          :d-frm             :error
+   :close-paren   [[:p-frm form-end]     [nil form-end]     [nil nil]       [nil nil]          [nil nil]]
+   :open-paren    [[:p-frm form-start]   [nil form-start]   [nil nil]       [nil nil]          [nil nil]]
+   :close-brace   [[:d-frm form-end]     [nil nil]          [nil nil]       [nil form-end]     [nil nil]]
+   :open-brace    [[:d-frm form-start]   [nil nil]          [nil nil]       [nil form-start]   [nil nil]]
+   :close-bracket [[:d-frm form-end]     [nil nil]          [nil nil]       [nil form-end]     [nil nil]]
+   :open-bracket  [[:d-frm form-start]   [nil nil]          [nil nil]       [nil form-start]   [nil nil]]
+   :ws-char       [[nil nil]             [nil nil]          [nil form-end]  [nil nil]          [nil nil]]
+   :other-char    [[:o-frm form-start]   [nil nil]          [nil nil]       [nil nil]          [nil nil]]})
 
 (defn set-state
   "Replace current state with new-state, if new-state is not nil"
@@ -83,6 +87,10 @@
             ctxt
             state-matrix
             (case c
+              \[       :open-bracket
+              \]       :close-bracket
+              \{       :open-brace
+              \}       :close-brace
               \(       :open-paren
               \)       :close-paren
               \tab     :ws-char
