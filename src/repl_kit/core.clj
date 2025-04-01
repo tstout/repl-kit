@@ -29,21 +29,6 @@
    coordinates")
 
 
-(defn tokens 
-  "Acquire seq of current parse tokens for the text Area"
-  [ta]
-  (-> ta
-      .getDocument
-      .iterator
-      iterator-seq))
-
-(defn caret-coords [ta]
-  (let [{:keys [x y]} (-> ta 
-                          bean 
-                          :caret
-                          bean)]
-    {:x x :y y}))
-
 (defn mk-frame []
   (let [f   (frame :title "(REPL-KIT)" 
                    :visible? true

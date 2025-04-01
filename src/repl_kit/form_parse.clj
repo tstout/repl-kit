@@ -112,9 +112,7 @@
     (subs txt offset init-offset)))
 
 (comment
-  (def ctxt (atom {:offset 20}))
-  (foom)
-
+ 
   (find-form-start "[] (+ 20 20)" 12)
 
   (time (find-form-start "[] (+ 20 20)" 12))
@@ -124,21 +122,7 @@
   (def expr "{:a 1 :b 2}")
 
   (find-form-start expr (.length expr))
-
-  (reverse "(+ 20 20)")
-  (nth "012345" 5)
-
-  (dec-offset ctxt)
-
-  (reverse (subs "(+ 20 20)" 0 8))
-
-  (subs "01234567" 0 8)
-
-  (seq "abc")
-
-  (doseq [c "abc"]
-    (prn c))
-
+  
  (->> (all-ns)
      (map ns-name)
      (map name))  

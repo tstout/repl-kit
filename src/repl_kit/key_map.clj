@@ -5,6 +5,7 @@
             [repl-kit.form-parse :refer [form-txt]]
             [zprint.core :as zp]
             [repl-kit.repl-eval :refer [do-eval]]
+            [repl-kit.cbuff :refer [mk-cbuff]]
             [seesaw.keystroke :refer [keystroke]]
             [seesaw.chooser :refer [choose-file]]
             [seesaw.widgets.log-window :refer [log clear]]))
@@ -115,10 +116,12 @@
              nil))
 
   (spit "fmt.edn" fstr)
-  (rem)
+  
 
-  (KeyStroke/getKeyCode "LEFT")
+  
+  
 
+  (when-not )
 
   (->> (all-ns)
        (map ns-name)
