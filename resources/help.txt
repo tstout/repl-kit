@@ -4,7 +4,7 @@
 | |   |  __/| |_) || ||_____||   < | || |_ 
 |_|    \___|| .__/ |_|       |_|\_\|_| \__|
             |_|                            
-1.0.6
+1.0.7
 
 ctrl-o      Open File
 ctrl-s      Save File
@@ -13,3 +13,5 @@ ctrl-l      Load file (current buffer)
 ctrl-f      Format file (current buffer)
 ctrl-h      Show this help
 ctrl-c      Clear log window
+ctrl-a      Forward cycle through file buffers
+ctrl-z      Reverse cycle through file buffers

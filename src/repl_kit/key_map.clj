@@ -26,6 +26,7 @@
 
 (defn configure-key-map [m]
   (let [{:keys [txt-area log-window repl-conn top-label]} m
+        cbuff                                             (mk-cbuff)
         state                                             (atom {:dirty false
                                                                  :file  nil})
         log-w                                             (partial log log-window)]
@@ -40,12 +41,20 @@
                  (log-w "Formatting file...\n"))))
     
     (map-key txt-area
-             "control A"
-             (fn [_] (log-w "CTRL A\n")))
+             "control A" 
+             (fn [_] 
+               (when-let [path (cbuff :forward)]
+                 (.setText txt-area (slurp path))
+                 (swap! state assoc :file path)
+                 (.setText top-label path))))
     
     (map-key txt-area
              "control Z"
-             (fn [_] (log-w "CTRL Z\n")))
+             (fn [_] 
+               (when-let [path (cbuff :backward)]
+                 (.setText txt-area (slurp path))
+                 (swap! state assoc :file path)
+                 (.setText top-label path))))
     
     (map-key txt-area
              "control C"
@@ -88,7 +97,8 @@
                                             (swap! state assoc :file path)
                                             (.setText top-label path)
                                             (log-w (format "loading file: %s\n" path))
-                                            (.setText txt-area (slurp path)))))))
+                                            (.setText txt-area (slurp path))
+                                            (cbuff :push path))))))
 
     (map-key txt-area
              "control ENTER"
