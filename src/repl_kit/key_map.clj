@@ -10,7 +10,8 @@
             [seesaw.chooser :refer [choose-file]]
             [seesaw.widgets.log-window :refer [log clear]]))
 
-
+;; TODO - move zprint formatting functionality into
+;; separate namespace
 
 (def fmt-opts
   {:width  100
@@ -108,13 +109,13 @@
                                           .getCaret
                                           .getDot))
                      result (do-eval repl-conn txt)]
-                 (log-w (format "%s]\n" txt))
-                 (log-w (format "%s> %s\n"
-                                (:ns result)
+                 #_(log-w (format "%s\n" txt))
+                 (log-w (format "%s\n %s:>" 
                                 (zp/zprint-file-str
                                  (:val result)
                                  nil
-                                 fmt-opts))))))))
+                                 fmt-opts)
+                                (:ns result))))))))
 
 (comment
   (zp/zprint-str (slurp "/Users/tstout/src/sample-proj/deps.edn"))
@@ -127,14 +128,11 @@
 
   (spit "fmt.edn" fstr)
   
-
-  
-  
-
-  (when-not )
-
   (->> (all-ns)
        (map ns-name)
        (map name))
+  
+  (*' 2 2)
+  (*)
   ;;
   )

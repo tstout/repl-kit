@@ -23,6 +23,7 @@
   
   (ns-exists? "repl-kit.ns-util")
   (ls-ns)
+  (publics)
 
   (count (ls-ns))
 

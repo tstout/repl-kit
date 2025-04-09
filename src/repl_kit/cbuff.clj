@@ -11,7 +11,7 @@
    
    Forward will increment until end of buffer reached.
    Backward will decrement until beginning of buffer reached.
-   "  
+   Push add an item to the buffer (if it does not already exist)."  
   []
   (let [index (atom 0) 
         buff  (atom [])
