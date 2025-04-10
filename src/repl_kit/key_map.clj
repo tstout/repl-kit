@@ -109,13 +109,13 @@
                                           .getCaret
                                           .getDot))
                      result (do-eval repl-conn txt)]
-                 #_(log-w (format "%s\n" txt))
-                 (log-w (format "%s\n %s:>" 
+                 (log-w (format "%s\n" txt))
+                 (log-w (format "%s:>\n%s\n" 
+                                (:ns result)
                                 (zp/zprint-file-str
                                  (:val result)
-                                 nil
-                                 fmt-opts)
-                                (:ns result))))))))
+                                 nil)
+                                 fmt-opts)))))))
 
 (comment
   (zp/zprint-str (slurp "/Users/tstout/src/sample-proj/deps.edn"))
