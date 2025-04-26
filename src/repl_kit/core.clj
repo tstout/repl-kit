@@ -55,31 +55,37 @@
   []
   (let [fr        (mk-frame)
         top-label (label :text "")
+        ns-label  (label :text "*ns* user")
+        a-label   (label :text "idle")
         lw        (log-window :auto-scroll? true 
                               :background  :black  
                               :foreground :white)
         ta        (text-area :syntax :clojure 
                              :editable? true 
                              :minimum-size [2048 :by 2048])
-        sp        (mig-panel :constraints ["" "[][grow]" "[][100%]"]
-                             :border [(line-border :thickness 1) 5]
-                             :items [[ top-label "span, grow"]
-                                     [(mk-split-pane ta lw) "span, grow"]
-                                     #_[ (RTextScrollPane. ta true) "span, grow"]
-                                     #_[ :separator         "growx, wrap"]
-                                     #_[ (scrollable lw)     "span, grow"]])
+        sp        (mig-panel 
+                   :constraints ["" "[][grow][]" "[][100%][]"]
+                   :border [(line-border :thickness 1) 5]
+                   :items [[top-label "span, grow"]  
+                           [(mk-split-pane ta lw) "span, grow"]
+                           [ns-label "span 1"]
+                           [a-label "span 1"]
+                           #_[(RTextScrollPane. ta true) "span, grow"]
+                           #_[:separator         "growx, wrap"]
+                           #_[(scrollable lw)     "span, grow"]])
         ops       {:get-text  (fn [] (.getText ta))
                    :show      (fn [] (fr :show))
                    :load-file (fn [file] (.setText ta (slurp file)))
                    :get-ta    (fn [] ta)
                    :log       (fn [msg] (log lw msg))
-                   :clear-log (fn [] (clear lw))} 
+                   :clear-log (fn [] (clear lw))}
         repl-conn (repl-init)]
     (fr :set-content sp)
     (apply-dark-theme ta)
     (configure-key-map {:txt-area   ta 
                         :log-window lw
                         :top-label  top-label
+                        :a-label    a-label
                         :repl-conn  repl-conn}) 
     #_(listen ta #{:key-typed :property-change} (fn [e] (prn (bean e))))
     #_(log lw "REPL-KIT v1.0.5\n")
@@ -95,9 +101,7 @@
   *e
   *1
   (def app (mk-app))
-
-  ;; hello
-
+  
   (app :get-text)
   (app :show)
   (app :get-text)`

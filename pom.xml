@@ -196,6 +196,11 @@
       <artifactId>zprint</artifactId>
       <version>1.2.4</version>
     </dependency>
+     <dependency>
+      <groupId>org.clojure</groupId>
+      <artifactId>core.async</artifactId>
+      <version>1.8.741</version>
+    </dependency>
   </dependencies>
   <repositories>
     <repository>

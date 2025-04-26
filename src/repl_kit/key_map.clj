@@ -1,6 +1,7 @@
 (ns repl-kit.key-map
   (:import [javax.swing KeyStroke])
   (:require [seesaw.keymap :refer [map-key]] 
+            [repl-kit.animation :refer [execute-frames mk-label-animation]]
             [clojure.java.io :as io]
             [repl-kit.form-parse :refer [form-txt]]
             [zprint.core :as zp]
@@ -26,11 +27,12 @@
 
 
 (defn configure-key-map [m]
-  (let [{:keys [txt-area log-window repl-conn top-label]} m
-        cbuff                                             (mk-cbuff)
-        state                                             (atom {:dirty false
-                                                                 :file  nil})
-        log-w                                             (partial log log-window)]
+  (let [{:keys [txt-area log-window repl-conn top-label a-label]} m
+        cbuff                                                     (mk-cbuff)
+        state                                                     (atom {:dirty false
+                                                                         :file  nil})
+        log-w                                                     (partial log log-window)
+        animation                                                 (mk-label-animation a-label execute-frames)]
     (map-key txt-area
              "control F"
              (fn [_]
@@ -104,7 +106,10 @@
     (map-key txt-area
              "control ENTER"
              (fn [_]
-               (let [txt    (form-txt (.getText txt-area)
+               (log-w (format "IsEDTThr %b" 
+                       javax.swing.SwingUtilities/isEventDispatchThread))
+               (let [_      (animation :start)
+                     txt    (form-txt (.getText txt-area)
                                       (-> txt-area
                                           .getCaret
                                           .getDot))
@@ -115,7 +120,8 @@
                                 (zp/zprint-file-str
                                  (:val result)
                                  nil)
-                                 fmt-opts)))))))
+                                fmt-opts))
+                 (animation :stop))))))
 
 (comment
   (zp/zprint-str (slurp "/Users/tstout/src/sample-proj/deps.edn"))
@@ -130,9 +136,13 @@
   
   (->> (all-ns)
        (map ns-name)
-       (map name))
+       (map name)
+       sort)
   
   (*' 2 2)
   (*)
+
+  (printf "IsEDTThr %b"
+          javax.swing.SwingUtilities/isEventDispatchThread)
   ;;
   )
