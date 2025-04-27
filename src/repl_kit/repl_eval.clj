@@ -38,10 +38,19 @@
     (when-let [line (.readLine reader)]
       (edn/read-string {:default tagged-literal} line)))) 
 
-(defn do-eval [conn code]
+(defn when-done
+  "Invoke a fn when a future completes. Returns a future wrapping the result
+   of the fn to call."
+  [future-to-watch fn-to-call]
+  (future (fn-to-call @future-to-watch)))
+
+
+(defn do-eval [conn code f]
+  {:pre [(fn? f)]}
   #_(println (format "code in eval is '%s'" code))
-  (send-form conn code)
-  (read-response conn))
+  (when-done (future (send-form conn code)
+                     (read-response conn))
+             f))
 
 (defn repl-init 
   "Startup a prepl server and return a connection to it."
@@ -58,21 +67,8 @@
   *data-readers*
   (start-repl-server) 
   (def repl-conn (connect-to-prepl "localhost" 5555))
-
-  (edn/read-string {:default tagged-literal} "{:val #namespace[user]}")
   
-  (edn/read-string {:default tagged-literal}
-                   (pr-str {:tag :ret, :val *ns* :ns "user", :ms 0, :form "*ns*"}))
-
-  (do-eval repl-conn '(+ 20 20))
-
-  (do-eval repl-conn "(defn foo []\n{:a 1})")
-  
-  (do-eval repl-conn "(+ 20 20)")
-  (do-eval repl-conn "{:a 1}") 
-
-  (do-eval repl-conn  "*ns*")
-  (do-eval repl-conn '(in-ns repl-kit.repl-eval))
+  (do-eval repl-conn '(+ 20 20) #(prn %))
   
   (pr-str *ns*)
 

@@ -78,12 +78,13 @@
              (fn [_]
                (when-let [file (@state :file)]
                  (log-w (format "eval file %s\n" file))
-                 (let [result (do-eval
+                 (do-eval
                                repl-conn
-                               (format "(load-file \"%s\")" file))]
-                   (log-w (format "%s> %s\n"
-                                  (:ns result)
-                                  (pr-str (:val result))))))))
+                               (format "(load-file \"%s\")" file)
+                               (fn [result]
+                                 (log-w (format "%s> %s\n"
+                                                (:ns result)
+                                                (pr-str (:val result)))))))))
 
     (map-key txt-area
              "control S"
@@ -105,23 +106,22 @@
 
     (map-key txt-area
              "control ENTER"
-             (fn [_]
-               (log-w (format "IsEDTThr %b" 
-                       javax.swing.SwingUtilities/isEventDispatchThread))
+             (fn [_] 
                (let [_      (animation :start)
                      txt    (form-txt (.getText txt-area)
                                       (-> txt-area
                                           .getCaret
-                                          .getDot))
-                     result (do-eval repl-conn txt)]
-                 (log-w (format "%s\n" txt))
-                 (log-w (format "%s:>\n%s\n" 
-                                (:ns result)
-                                (zp/zprint-file-str
-                                 (:val result)
-                                 nil)
-                                fmt-opts))
-                 (animation :stop))))))
+                                          .getDot))]
+                 (do-eval repl-conn txt
+                          (fn [result]
+                            (animation :stop)
+                            (log-w (format "%s\n" txt))
+                            (log-w (format "%s:>\n%s\n"
+                                           (:ns result)
+                                           (zp/zprint-file-str
+                                            (:val result)
+                                            nil
+                                            fmt-opts))))))))))
 
 (comment
   (zp/zprint-str (slurp "/Users/tstout/src/sample-proj/deps.edn"))
