@@ -27,12 +27,12 @@
 
 
 (defn configure-key-map [m]
-  (let [{:keys [txt-area log-window repl-conn top-label a-label]} m
-        cbuff                                                     (mk-cbuff)
-        state                                                     (atom {:dirty false
-                                                                         :file  nil})
-        log-w                                                     (partial log log-window)
-        animation                                                 (mk-label-animation a-label execute-frames)]
+  (let [{:keys [txt-area log-window repl-conn top-label a-label ns-label]} m
+        cbuff                                                              (mk-cbuff)
+        state                                                              (atom {:dirty false
+                                                                                  :file  nil})
+        log-w                                                              (partial log log-window)
+        animation                                                          (mk-label-animation a-label execute-frames)]
     (map-key txt-area
              "control F"
              (fn [_]
@@ -79,12 +79,12 @@
                (when-let [file (@state :file)]
                  (log-w (format "eval file %s\n" file))
                  (do-eval
-                               repl-conn
-                               (format "(load-file \"%s\")" file)
-                               (fn [result]
-                                 (log-w (format "%s> %s\n"
-                                                (:ns result)
-                                                (pr-str (:val result)))))))))
+                  repl-conn
+                  (format "(load-file \"%s\")" file)
+                  (fn [result]
+                    (log-w (format "%s> %s\n"
+                                   (:ns result)
+                                   (pr-str (:val result)))))))))
 
     (map-key txt-area
              "control S"
@@ -107,14 +107,16 @@
     (map-key txt-area
              "control ENTER"
              (fn [_] 
-               (let [_      (animation :start)
-                     txt    (form-txt (.getText txt-area)
-                                      (-> txt-area
-                                          .getCaret
-                                          .getDot))]
-                 (do-eval repl-conn txt
+               (let [_   (animation :start)
+                     txt (form-txt (.getText txt-area)
+                                   (-> txt-area
+                                       .getCaret
+                                       .getDot))]
+                 (do-eval repl-conn 
+                          txt
                           (fn [result]
                             (animation :stop)
+                            (.setText ns-label (str "*ns* " (:ns result)))
                             (log-w (format "%s\n" txt))
                             (log-w (format "%s:>\n%s\n"
                                            (:ns result)

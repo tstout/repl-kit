@@ -21,14 +21,6 @@
   (:import [org.fife.ui.rtextarea RTextScrollPane])
   (:gen-class))
 
-
-(def notes 
-  "For showing results of REPL evaluation consider using 
-   Graphics.drawText(String text, int x, int y)
-   Need to see how to translate txt position in RSyntaxTextArea to 
-   coordinates")
-
-
 (defn mk-frame []
   (let [f   (frame :title "(REPL-KIT)" 
                    :visible? true
@@ -56,7 +48,7 @@
   (let [fr        (mk-frame)
         top-label (label :text "")
         ns-label  (label :text "*ns* user")
-        a-label   (label :text "idle")
+        a-label   (label :text "")
         lw        (log-window :auto-scroll? true 
                               :background  :black  
                               :foreground :white)
@@ -84,6 +76,7 @@
     (apply-dark-theme ta)
     (configure-key-map {:txt-area   ta 
                         :log-window lw
+                        :ns-label   ns-label
                         :top-label  top-label
                         :a-label    a-label
                         :repl-conn  repl-conn}) 

@@ -45,13 +45,18 @@
   (future (fn-to-call @future-to-watch)))
 
 
-(defn do-eval [conn code f]
+(defn do-eval 
+  "Evaluate a form in another thread. The provided function is 
+   invoked when the evaluation completes. The function is passed
+   the result of the evaluation."
+  [conn code f]
   {:pre [(fn? f)]}
   #_(println (format "code in eval is '%s'" code))
   (when-done (future (send-form conn code)
                      (read-response conn))
              f))
 
+;; TODO - need to parameterize port
 (defn repl-init 
   "Startup a prepl server and return a connection to it."
   []

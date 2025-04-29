@@ -1,7 +1,7 @@
 (ns repl-kit.animation
   (:require
    [seesaw.core :refer [invoke-later]]
-   [clojure.core.async :refer [<! put! pub sub chan <! >! timeout close! go-loop]]))
+   [clojure.core.async :refer [<! chan <! >! timeout close! go-loop]]))
 
 (defn coll->chan
   "Returns a core.async channel which cycles through the supplied sequence of [delay data] pairs.
