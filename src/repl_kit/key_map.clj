@@ -1,13 +1,11 @@
-(ns repl-kit.key-map
-  (:import [javax.swing KeyStroke])
+(ns repl-kit.key-map 
   (:require [seesaw.keymap :refer [map-key]] 
-            [repl-kit.animation :refer [execute-frames mk-label-animation]]
+            [repl-kit.animation :refer [execute-frames spinner-frames mk-label-animation]]
             [clojure.java.io :as io]
             [repl-kit.form-parse :refer [form-txt]]
             [zprint.core :as zp]
             [repl-kit.repl-eval :refer [do-eval]]
-            [repl-kit.cbuff :refer [mk-cbuff]]
-            [seesaw.keystroke :refer [keystroke]]
+            [repl-kit.cbuff :refer [mk-cbuff]] 
             [seesaw.chooser :refer [choose-file]]
             [seesaw.widgets.log-window :refer [log clear]]))
 
@@ -32,7 +30,7 @@
         state                                                              (atom {:dirty false
                                                                                   :file  nil})
         log-w                                                              (partial log log-window)
-        animation                                                          (mk-label-animation a-label execute-frames)]
+        animation                                                          (mk-label-animation a-label spinner-frames)]
     (map-key txt-area
              "control F"
              (fn [_]

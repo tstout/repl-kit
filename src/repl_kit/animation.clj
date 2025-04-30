@@ -41,6 +41,12 @@
    [180 "executi*g"]
    [180 "executin*"]])
 
+(def spinner-frames 
+  [[180 "/"] 
+   [180 "-"] 
+   [180 "\\"] 
+   [180 "|"]])
+
 (defn mk-label-animation 
   "Create a closure that binds a label to an animation channel. 
    Returns a fn that accepts the operations :start and :stop"
