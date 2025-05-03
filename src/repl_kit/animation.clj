@@ -53,6 +53,9 @@
  [label frames] 
  (let [ch  (atom nil)
        ops {:start (fn [] 
+                     ;; TODO, close the channel here to prevent
+                     ;; channel leak when start an animation when
+                     ;; one is currently in progress. consider showing a count
                      (reset! ch (busy-animation 
                                  frames 
                                  (fn [txt]
