@@ -1,11 +1,11 @@
-(ns repl-kit.key-map 
-  (:require [seesaw.keymap :refer [map-key]] 
+(ns repl-kit.key-map
+  (:require [seesaw.keymap :refer [map-key]]
             [repl-kit.animation :refer [execute-frames spinner-frames mk-label-animation]]
             [clojure.java.io :as io]
-            [repl-kit.form-parse :refer [form-txt]]
+            [repl-kit.form-parse :refer [form-txt form-valid?]]
             [zprint.core :as zp]
             [repl-kit.repl-eval :refer [do-eval]]
-            [repl-kit.cbuff :refer [mk-cbuff]] 
+            [repl-kit.cbuff :refer [mk-cbuff]]
             [seesaw.chooser :refer [choose-file]]
             [seesaw.widgets.log-window :refer [log clear]]))
 
@@ -18,9 +18,9 @@
             :sort?    true
             :indent   2
             :justify? true}
-   :list   {:indent 1 
+   :list   {:indent 1
             :hang? false}
-   :vector {:indent 1} 
+   :vector {:indent 1}
    :style  [:community]})
 
 
@@ -40,23 +40,23 @@
                            fmt-opts)]
                  (.setText txt-area rstr)
                  (log-w "Formatting file...\n"))))
-    
+
     (map-key txt-area
-             "control A" 
-             (fn [_] 
+             "control A"
+             (fn [_]
                (when-let [path (cbuff :forward)]
                  (.setText txt-area (slurp path))
                  (swap! state assoc :file path)
                  (.setText top-label path))))
-    
+
     (map-key txt-area
              "control Z"
-             (fn [_] 
+             (fn [_]
                (when-let [path (cbuff :backward)]
                  (.setText txt-area (slurp path))
                  (swap! state assoc :file path)
                  (.setText top-label path))))
-    
+
     (map-key txt-area
              "control C"
              (fn [_]
@@ -65,8 +65,8 @@
     (map-key txt-area
              "control H"
              (fn [_]
-               (log-w (-> "help.txt" 
-                          io/resource 
+               (log-w (-> "help.txt"
+                          io/resource
                           slurp))))
 
     (map-key txt-area
@@ -104,45 +104,49 @@
 
     (map-key txt-area
              "control ENTER"
-             (fn [_] 
+             (fn [_]
                (let [_   (animation :start)
                      txt (form-txt (.getText txt-area)
                                    (-> txt-area
                                        .getCaret
                                        .getDot))]
-                 (do-eval repl-conn 
-                          txt
-                          (fn [result]
-                            (animation :stop)
-                            (.setText ns-label (str "*ns* " (:ns result)))
-                            (log-w (format "%s\n" txt))
-                            (log-w (format "%s:>\n%s\n"
-                                           (:ns result)
-                                           (zp/zprint-file-str
-                                            (:val result)
-                                            nil
-                                            fmt-opts))))))))))
+                 (if (form-valid? txt)
+                   (do-eval repl-conn
+                            txt
+                            (fn [result]
+                              (animation :stop)
+                              (.setText ns-label (str "*ns* " (:ns result)))
+                              (log-w (format "%s\n" txt))
+                              (log-w (format "%s:>\n%s\n"
+                                             (:ns result)
+                                             (zp/zprint-file-str
+                                              (:val result)
+                                              nil
+                                              fmt-opts)))))
+                   (do
+                     (animation :stop)
+                     (log-w (format "%s\n Form not valid\n" txt)))))))))
 
-(comment
-  (zp/zprint-str (slurp "/Users/tstout/src/sample-proj/deps.edn"))
+  (comment
+    (zp/zprint-str (slurp "/Users/tstout/src/sample-proj/deps.edn"))
 
-  (def fstr (zp/zprint-file-str
-             (slurp "/Users/tstout/src/sample-proj/deps.edn")
-             nil
-             nil
-             nil))
+    (def fstr (zp/zprint-file-str
+               (slurp "/Users/tstout/src/sample-proj/deps.edn")
+               nil
+               nil
+               nil))
 
-  (spit "fmt.edn" fstr)
-  
-  (->> (all-ns)
-       (map ns-name)
-       (map name)
-       sort)
-  
-  (*' 2 2)
-  (*)
+    (spit "fmt.edn" fstr)
 
-  (printf "IsEDTThr %b"
-          javax.swing.SwingUtilities/isEventDispatchThread)
-  ;;
-  )
+    (->> (all-ns)
+         (map ns-name)
+         (map name)
+         sort)
+
+    (*' 2 2)
+    (*)
+
+    (printf "IsEDTThr %b"
+            javax.swing.SwingUtilities/isEventDispatchThread)
+    ;;
+    )

@@ -1,4 +1,5 @@
-(ns repl-kit.form-parse)
+(ns repl-kit.form-parse
+  (:require [clojure.tools.analyzer.jvm :as ana.jvm]))
 
 (defn dec-offset [ctxt]
   (swap! ctxt #(assoc
@@ -108,11 +109,21 @@
   [txt dot]
   (let [f-info      (find-form-start txt dot)
         offset      (:offset @f-info)
-        init-offset (:init-offset @f-info)]
+        init-offset (:init-offset @f-info)] 
     (subs txt offset init-offset)))
+
+(defn form-valid? [form-txt]
+  (try
+    #_{:clj-kondo/ignore [:unused-value]}
+    (read-string form-txt)
+    true
+    (catch Exception _
+      false)))
+
 
 (comment
  
+  (form-valid? "(+ 1 2")
   (find-form-start "[] (+ 20 20)" 12)
 
   (time (find-form-start "[] (+ 20 20)" 12))
@@ -125,7 +136,11 @@
   
  (->> (all-ns)
      (map ns-name)
-     (map name))  
+     (map name))
+  
+
+  (ana.jvm/analyze (read-string "()1"))
+() 1
 
 ;;
   )
