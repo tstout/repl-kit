@@ -94,7 +94,8 @@
     (map-key txt-area
              "control O"
              (fn [_]
-               (choose-file :success-fn (fn [_ file]
+               (choose-file :dir "."
+                            :success-fn (fn [_ file]
                                           (let [path (.getAbsolutePath file)]
                                             (swap! state assoc :file path)
                                             (.setText top-label path)
