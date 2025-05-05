@@ -49,20 +49,23 @@
 
 (defn mk-label-animation 
   "Create a closure that binds a label to an animation channel. 
-   Returns a fn that accepts the operations :start and :stop"
+   Returns a fn that accepts the operations :start and :stop."
  [label frames] 
  (let [ch  (atom nil)
+       cnt (atom 0)
        ops {:start (fn [] 
-                     ;; TODO, close the channel here to prevent
-                     ;; channel leak when start an animation when
-                     ;; one is currently in progress. consider showing a count
-                     (reset! ch (busy-animation 
-                                 frames 
-                                 (fn [txt]
-                                   (invoke-later (.setText label txt))))))
+                     (swap! cnt inc)
+                     (when (= 1 @cnt) 
+                       (reset! ch (busy-animation
+                                   frames
+                                   (fn [txt]
+                                     (invoke-later
+                                      (.setText label (str txt " " @cnt))))))))
             :stop  (fn [] 
-                     (close! @ch)
-                     (invoke-later (.setText label "")))}]
+                     (swap! cnt dec)
+                     (when (zero? @cnt)
+                       (close! @ch)
+                       (invoke-later (.setText label ""))))}]
    (fn [operation & args] 
      (-> (ops operation) (apply args)))))
 

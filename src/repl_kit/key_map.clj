@@ -1,6 +1,6 @@
 (ns repl-kit.key-map
   (:require [seesaw.keymap :refer [map-key]]
-            [repl-kit.animation :refer [execute-frames spinner-frames mk-label-animation]]
+            [repl-kit.animation :refer [spinner-frames mk-label-animation]]
             [clojure.java.io :as io]
             [repl-kit.form-parse :refer [form-txt form-valid?]]
             [zprint.core :as zp]
