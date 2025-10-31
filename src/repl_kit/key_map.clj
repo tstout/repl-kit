@@ -118,8 +118,7 @@
                               (animation :stop)
                               (.setText ns-label (str "*ns* " (:ns result)))
                               (log-w (format "%s\n" txt))
-                              (log-w (format "%s:>\n%s\n"
-                                             (:ns result)
+                              (log-w (format "%s\n" 
                                              (zp/zprint-file-str
                                               (:val result)
                                               nil

@@ -27,7 +27,6 @@ clojure -M:repl
 ```
 ## TODOs
 - Make repl listen port configurable
-- remove spurious ns in from execution results
 - support connecting to remote JVM (should be minor change)
 - Remove some commented code, add comments where warranted
 
