@@ -1,6 +1,7 @@
 (ns repl-kit.core
   (:require [clojure.tools.cli :refer [parse-opts]]
             [clojure.java.io :as io]
+            [clojure.string :as string]
             [repl-kit.theme :refer [apply-dark-theme]]
             [repl-kit.key-map :refer [configure-key-map]]
             [repl-kit.repl-eval :refer [repl-init]] 
@@ -14,8 +15,9 @@
                                  scrollable
                                  top-bottom-split]]
             [seesaw.widgets.log-window :refer [log-window log clear]]
-            [seesaw.border :refer [line-border]]
+            [seesaw.border :refer [line-border]] 
             [seesaw.rsyntax :refer [text-area]] 
+            [seesaw.font :refer [font-families font]]
             [seesaw.mig :refer [mig-panel]]
             [seesaw.dev :refer [show-events show-options]])
   (:import [org.fife.ui.rtextarea RTextScrollPane])
@@ -53,6 +55,8 @@
                               :background  :black  
                               :foreground :white)
         ta        (text-area :syntax :clojure 
+                             :font (font :name :monospaced
+                                         :size 14)
                              :editable? true 
                              :minimum-size [2048 :by 2048])
         sp        (mig-panel 
@@ -94,20 +98,29 @@
   *e
   *1
   (def app (mk-app))
-  
+
   (app :get-text)
   (app :show)
-  (app :get-text)`
-  
-  *ns*
+  (app :get-text) `*ns*
 
   (range 10)
   (app :log "Hello..\n")
   (app :clear-log)
   (load-file)
+  (seesaw.font/font)
+  (seesaw.font/font-families)
   (show-events (frame))
   (show-options (log-window))
-  (show-events (seesaw.rsyntax/text-area :syntax :clojure :editable? true)) 
+  (show-events (seesaw.rsyntax/text-area :syntax :clojure :editable? true))
   (show-options (seesaw.rsyntax/text-area :syntax :clojure :editable? true))
+  (bean (seesaw.rsyntax/text-area :syntax :clojure :editable? true))
+
+  (font-families)
+  (seesaw.font/font "ARIAL-ITALIC-20")
+  (seesaw.font/font "MENLO-MONOSPACE-14")
+
+  (->> (font-families) 
+       (filter #(string/includes? % "mon")))
+
   ;;
   )
