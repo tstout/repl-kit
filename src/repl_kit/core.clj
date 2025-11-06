@@ -57,7 +57,7 @@
                               :foreground :white)
         ta        (text-area :syntax :clojure
                              :font (font :name :monospaced
-                                         :size 14)
+                                         :size (:font opts))
                              :editable? true
                              :minimum-size [2048 :by 2048])
         sp        (mig-panel

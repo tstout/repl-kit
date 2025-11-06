@@ -13,6 +13,10 @@
    ["-s" "--server SERVER"  "REPL server(host)" 
     :default "localhost"]
    ["-i" "--install" "install clojure (future feature)"]
+   ["-f" "--font FONT-SIZE" "font size"
+    :default 12
+    :parse-fn #(Integer/parseInt %)
+    :validate [#(< 5 % 72) "Must be a number between 5 and 72"]]
    ["-h" "--help"    "show help"]])
 
 (defn usage [options-summary]
@@ -36,7 +40,9 @@
       (:help options) ; help => exit OK with usage summary
       {:exit-message (usage summary) :ok? true}
       errors ; errors => exit with description of errors
-      {:exit-message (error-msg errors)} 
+      {:exit-message (error-msg errors)}
+      (:install options) 
+      {:exit-message "Clojure installation feature not yet implemented." :ok? true}
       :else 
       opts)))
 
@@ -60,7 +66,7 @@
 
   (validate-args ["-p" "5000" "-s" "stout-pi4"])
 
-  (process-args ["-p" "5000" "-s" "stout-pi4"])
+  (process-args ["-p" "5000" "-s" "stout-pi4"]) 
 
   (validate-args [])
 
