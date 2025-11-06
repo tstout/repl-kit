@@ -1,8 +1,5 @@
 (ns repl-kit.repl-eval
-  (:import [clojure.lang LineNumberingPushbackReader]
-           [java.io StringReader 
-            PipedReader 
-            PipedWriter 
+  (:import [java.io 
             BufferedReader 
             PrintWriter 
             InputStreamReader]
@@ -10,14 +7,15 @@
   (:require [clojure.core.server :as server]
             [clojure.edn :as edn]))
 
-(defn start-repl-server []
+(defn start-repl-server [opts]
+  (let [{:keys [port server]} opts]
   (server/start-server
    {:accept  'clojure.core.server/io-prepl 
     :address "localhost"
-    :port    5555
-    :name    "my-prepl"}))
+    :port    port
+    :name    "repl-kit-prepl"})))
 
-(defn connect-to-prepl [host port]
+(defn connect-to-prepl [host port] 
   (let [socket (Socket. host port)
         writer (PrintWriter. (.getOutputStream socket) true)
         reader (BufferedReader. (InputStreamReader. (.getInputStream socket)))]
@@ -44,7 +42,6 @@
   [future-to-watch fn-to-call]
   (future (fn-to-call @future-to-watch)))
 
-
 (defn do-eval 
   "Evaluate a form in another thread. The provided function is 
    invoked when the evaluation completes. The function is passed
@@ -56,21 +53,22 @@
                      (read-response conn))
              f))
 
-;; TODO - need to parameterize port
 (defn repl-init 
   "Startup a prepl server and return a connection to it."
-  []
+  [opts]
+  (let [{:keys [server port]} opts]
   (alter-var-root #'*repl* (constantly true)) ;; Bug work-around
   (require '[clojure.repl.deps :refer :all])
-  (start-repl-server)
-  (connect-to-prepl "localhost" 5555)) 
+   ;; TODO consider strategy for running a server or not 
+  (start-repl-server opts)
+  (connect-to-prepl server port))) 
 
 (comment
   
   ;; TODO cleanup all
   *default-data-reader-fn* 
   *data-readers*
-  (start-repl-server) 
+  (start-repl-server {:port 5555 :server "localhost"}) 
   (def repl-conn (connect-to-prepl "localhost" 5555))
   
   (do-eval repl-conn '(+ 20 20) #(prn %))
@@ -82,10 +80,7 @@
 
   (pr-str 'repl-conn)
 
-  :hello
-
-  *ns*
-  (eval "(+ 20 20")
+  *ns* 
   (ns-publics 'repl-kit.core)
   (ns-publics 'repl-kit.repl-eval)
   ;;

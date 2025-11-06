@@ -3,8 +3,9 @@
             [clojure.java.io :as io]
             [clojure.string :as string]
             [repl-kit.theme :refer [apply-dark-theme]]
+            [repl-kit.options :refer [process-args]]
             [repl-kit.key-map :refer [configure-key-map]]
-            [repl-kit.repl-eval :refer [repl-init]] 
+            [repl-kit.repl-eval :refer [repl-init]]
             [seesaw.core :refer [show!
                                  frame
                                  label
@@ -15,8 +16,8 @@
                                  scrollable
                                  top-bottom-split]]
             [seesaw.widgets.log-window :refer [log-window log clear]]
-            [seesaw.border :refer [line-border]] 
-            [seesaw.rsyntax :refer [text-area]] 
+            [seesaw.border :refer [line-border]]
+            [seesaw.rsyntax :refer [text-area]]
             [seesaw.font :refer [font-families font]]
             [seesaw.mig :refer [mig-panel]]
             [seesaw.dev :refer [show-events show-options]])
@@ -24,7 +25,7 @@
   (:gen-class))
 
 (defn mk-frame []
-  (let [f   (frame :title "(REPL-KIT)" 
+  (let [f   (frame :title "(REPL-KIT)"
                    :visible? true
                    :width 800
                    :height 800
@@ -42,48 +43,45 @@
    :divider-location 350
    :one-touch-expandable? true))
 
-(defn mk-app 
+(defn mk-app
   "Main application closure. Operations available from the returned fn:
    :get-ta - acquire reference to the RSyntaxTextArea
    :get-text - String containing current text area content"
-  []
+  [opts]
   (let [fr        (mk-frame)
         top-label (label :text "")
         ns-label  (label :text "*ns* user")
         a-label   (label :text "")
-        lw        (log-window :auto-scroll? true 
-                              :background  :black  
+        lw        (log-window :auto-scroll? true
+                              :background  :black
                               :foreground :white)
-        ta        (text-area :syntax :clojure 
+        ta        (text-area :syntax :clojure
                              :font (font :name :monospaced
                                          :size 14)
-                             :editable? true 
+                             :editable? true
                              :minimum-size [2048 :by 2048])
-        sp        (mig-panel 
+        sp        (mig-panel
                    :constraints ["" "[][grow][]" "[][100%][]"]
                    :border [(line-border :thickness 1) 5]
-                   :items [[top-label "span, grow"]  
+                   :items [[top-label "span, grow"]
                            [(mk-split-pane ta lw) "span, grow"]
                            [ns-label "span 1"]
-                           [a-label "span 1"]
-                           #_[(RTextScrollPane. ta true) "span, grow"]
-                           #_[:separator         "growx, wrap"]
-                           #_[(scrollable lw)     "span, grow"]])
+                           [a-label "span 1"]])
         ops       {:get-text  (fn [] (.getText ta))
                    :show      (fn [] (fr :show))
                    :load-file (fn [file] (.setText ta (slurp file)))
                    :get-ta    (fn [] ta)
                    :log       (fn [msg] (log lw msg))
                    :clear-log (fn [] (clear lw))}
-        repl-conn (repl-init)]
+        repl-conn (repl-init opts)]
     (fr :set-content sp)
     (apply-dark-theme ta)
-    (configure-key-map {:txt-area   ta 
+    (configure-key-map {:txt-area   ta
                         :log-window lw
                         :ns-label   ns-label
                         :top-label  top-label
                         :a-label    a-label
-                        :repl-conn  repl-conn}) 
+                        :repl-conn  repl-conn})
     #_(listen ta #{:key-typed :property-change} (fn [e] (prn (bean e))))
     #_(log lw "REPL-KIT v1.0.5\n")
     (log lw (-> "help.txt" io/resource slurp))
@@ -91,13 +89,14 @@
 
 
 (defn -main [& args]
-  (-> (mk-app) 
-      :show))
+  (->
+   (mk-app (process-args args))
+   :show))
 
 (comment
   *e
   *1
-  (def app (mk-app))
+  (def app (mk-app {:port 5555 :server "localhost"}))
 
   (app :get-text)
   (app :show)
@@ -119,7 +118,7 @@
   (seesaw.font/font "ARIAL-ITALIC-20")
   (seesaw.font/font "MENLO-MONOSPACE-14")
 
-  (->> (font-families) 
+  (->> (font-families)
        (filter #(string/includes? % "mon")))
 
   ;;
