@@ -1,6 +1,5 @@
 (ns repl-kit.core
-  (:require [clojure.tools.cli :refer [parse-opts]]
-            [clojure.java.io :as io]
+  (:require [clojure.java.io :as io]
             [clojure.string :as string]
             [repl-kit.theme :refer [apply-dark-theme]]
             [repl-kit.options :refer [process-args]]
@@ -8,9 +7,7 @@
             [repl-kit.repl-eval :refer [repl-init]]
             [seesaw.core :refer [show!
                                  frame
-                                 label
-                                 text
-                                 vertical-panel
+                                 label 
                                  config!
                                  listen
                                  scrollable
