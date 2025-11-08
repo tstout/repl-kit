@@ -40,6 +40,7 @@
    :divider-location 350
    :one-touch-expandable? true))
 
+;; TODO - cleanup unused operation on this closure
 (defn mk-app
   "Main application closure. Operations available from the returned fn:
    :get-ta - acquire reference to the RSyntaxTextArea

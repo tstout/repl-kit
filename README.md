@@ -45,3 +45,6 @@ mvn deploy
 
 
 # TODOs
+- Update this to mention local vs remote repl and use of 
+  prepl, not nrepl
+- flesh out ns utils and make them easily accessible  
