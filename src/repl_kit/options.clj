@@ -17,6 +17,7 @@
     :default 12
     :parse-fn #(Integer/parseInt %)
     :validate [#(< 5 % 72) "Must be a number between 5 and 72"]]
+   ["-r" "--remote" "connect to remote REPL server, don't start local server"]
    ["-h" "--help"    "show help"]])
 
 (defn usage [options-summary]
@@ -62,7 +63,7 @@
      
 
 (comment
-  (validate-args ["-s" "stout-pi4" "--install"])
+  (validate-args ["-s" "stout-pi4"])
 
   (validate-args ["-p" "5000" "-s" "stout-pi4"])
 

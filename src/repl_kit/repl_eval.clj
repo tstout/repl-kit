@@ -49,18 +49,22 @@
   [conn code f]
   {:pre [(fn? f)]}
   #_(println (format "code in eval is '%s'" code))
-  (when-done (future (send-form conn code)
-                     (read-response conn))
-             f))
+  (try 
+    (when-done (future (send-form conn code)
+                       (read-response conn))
+               f)
+    (catch Exception e
+      (println (format "Exception during do-eval: %s" (.getMessage e))))))
 
 (defn repl-init 
   "Startup a prepl server and return a connection to it."
   [opts]
-  (let [{:keys [server port]} opts]
+  (let [{:keys [server port remote]} opts]
   (alter-var-root #'*repl* (constantly true)) ;; Bug work-around
   (require '[clojure.repl.deps :refer :all])
    ;; TODO consider strategy for running a server or not 
-  (start-repl-server opts)
+  (when-not remote
+    (start-repl-server opts))
   (connect-to-prepl server port))) 
 
 (comment
