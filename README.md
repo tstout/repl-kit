@@ -32,6 +32,7 @@ Options:
   -s, --server SERVER   localhost  REPL server(host)
   -i, --install                    install clojure (future feature)
   -f, --font FONT-SIZE  12         font size
+  -r, --remote                     connect to remote REPL server, don't start local server
   -h, --help                       show help
 ```
 
