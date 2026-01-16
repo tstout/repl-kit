@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="1400">
+  <rect width="100%" height="100%" fill="#ffffff"/>
+  <foreignObject x="10" y="10" width="980" height="1380">
+    <body xmlns="http://www.w3.org/1999/xhtml">
+      <pre style="font-family: monospace; font-size:12px; white-space: pre-wrap;">
+stateDiagram-v2
+    [*] --&gt; init
+
+    init --&gt; p_frm : open-paren / form-start
+    init --&gt; p_frm : close-paren / form-end
+    init --&gt; d_frm : open-brace / form-start
+    init --&gt; d_frm : close-brace / form-end
+    init --&gt; d_frm : open-bracket / form-start
+    init --&gt; d_frm : close-bracket / form-end
+    init --&gt; o_frm : other-char / form-start
+    init --&gt; init : ws-char / (no-op)
+
+    p_frm --&gt; p_frm : open-paren / form-start
+    p_frm --&gt; p_frm : close-paren / form-end
+    p_frm --&gt; p_frm : ws-char / (no-op)
+    p_frm --&gt; p_frm : open-brace / (no-op)
+    p_frm --&gt; p_frm : close-brace / (no-op)
+    p_frm --&gt; p_frm : open-bracket / (no-op)
+    p_frm --&gt; p_frm : close-bracket / (no-op)
+    p_frm --&gt; p_frm : other-char / (no-op)
+
+    o_frm --&gt; o_frm : open-paren / form-start
+    o_frm --&gt; o_frm : close-paren / form-end
+    o_frm --&gt; o_frm : ws-char / form-end
+    o_frm --&gt; o_frm : open-brace / (no-op)
+    o_frm --&gt; o_frm : close-brace / (no-op)
+    o_frm --&gt; o_frm : open-bracket / (no-op)
+    o_frm --&gt; o_frm : close-bracket / (no-op)
+    o_frm --&gt; o_frm : other-char / (no-op)
+
+    d_frm --&gt; d_frm : open-brace / form-start
+    d_frm --&gt; d_frm : close-brace / form-end
+    d_frm --&gt; d_frm : open-bracket / form-start
+    d_frm --&gt; d_frm : close-bracket / form-end
+    d_frm --&gt; d_frm : open-paren / (no-op)
+    d_frm --&gt; d_frm : close-paren / (no-op)
+    d_frm --&gt; d_frm : ws-char / (no-op)
+    d_frm --&gt; d_frm : other-char / (no-op)
+
+    error --&gt; error : (no transitions defined)
+      </pre>
+    </body>
+  </foreignObject>
+</svg>

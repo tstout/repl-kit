@@ -1,0 +1,40 @@
+stateDiagram-v2
+    [*] --> init
+
+    init --> p_frm : open-paren / form-start
+    init --> p_frm : close-paren / form-end
+    init --> d_frm : open-brace / form-start
+    init --> d_frm : close-brace / form-end
+    init --> d_frm : open-bracket / form-start
+    init --> d_frm : close-bracket / form-end
+    init --> o_frm : other-char / form-start
+    init --> init : ws-char / (no-op)
+
+    p_frm --> p_frm : open-paren / form-start
+    p_frm --> p_frm : close-paren / form-end
+    p_frm --> p_frm : ws-char / (no-op)
+    p_frm --> p_frm : open-brace / (no-op)
+    p_frm --> p_frm : close-brace / (no-op)
+    p_frm --> p_frm : open-bracket / (no-op)
+    p_frm --> p_frm : close-bracket / (no-op)
+    p_frm --> p_frm : other-char / (no-op)
+
+    o_frm --> o_frm : open-paren / form-start
+    o_frm --> o_frm : close-paren / form-end
+    o_frm --> o_frm : ws-char / form-end
+    o_frm --> o_frm : open-brace / (no-op)
+    o_frm --> o_frm : close-brace / (no-op)
+    o_frm --> o_frm : open-bracket / (no-op)
+    o_frm --> o_frm : close-bracket / (no-op)
+    o_frm --> o_frm : other-char / (no-op)
+
+    d_frm --> d_frm : open-brace / form-start
+    d_frm --> d_frm : close-brace / form-end
+    d_frm --> d_frm : open-bracket / form-start
+    d_frm --> d_frm : close-bracket / form-end
+    d_frm --> d_frm : open-paren / (no-op)
+    d_frm --> d_frm : close-paren / (no-op)
+    d_frm --> d_frm : ws-char / (no-op)
+    d_frm --> d_frm : other-char / (no-op)
+
+    error --> error : (no transitions defined)
