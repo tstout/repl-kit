@@ -32,8 +32,8 @@
         log-w                                                              (partial log log-window)
         animation                                                          (mk-label-animation a-label spinner-frames)
         emit-output                                                        (fn [text]
-                                                                          (when (some? text)
-                                                                            (log-w (str text))))]
+                                                                             (when (some? text)
+                                                                               (log-w (str text))))]
     (map-key txt-area
              "control F"
              (fn [_]
