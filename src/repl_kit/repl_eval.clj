@@ -30,11 +30,43 @@
                        (pr-str form)))
     (.flush writer))) 
 
-(defn read-response [connection]
-  (let [{:keys [reader]} connection]
-    #_(.flush reader)
-    (when-let [line (.readLine reader)]
-      (edn/read-string {:default tagged-literal} line)))) 
+(defn dispatch-callback [f & args]
+  (when (fn? f)
+    (try
+      (if (javax.swing.SwingUtilities/isEventDispatchThread)
+        (apply f args)
+        (javax.swing.SwingUtilities/invokeAndWait #(apply f args)))
+      (catch Exception e
+        (println (format "Exception during callback dispatch: %s" (.getMessage e)))))))
+
+(defn write-output [tag text]
+  (when (some? text)
+    (let [value (str text)
+          stream (if (= tag :err) System/err System/out)]
+      (.print stream value)
+      (.flush stream))))
+
+(defn read-response
+  ([connection]
+   (read-response connection nil))
+  ([connection on-output]
+   (let [{:keys [reader]} connection]
+     (loop []
+       (when-let [line (.readLine reader)]
+         (let [response (edn/read-string {:default tagged-literal} line)]
+           (cond
+             (and (map? response) (contains? #{:out :err} (:tag response)))
+             (do
+               (dispatch-callback on-output (:val response))
+               (write-output (:tag response) (:val response))
+               (recur))
+
+             (and (map? response)
+                  (contains? #{:ret :exception :root-ex} (:tag response)))
+             response
+
+             :else
+             (recur))))))))
 
 (defn when-done
   "Invoke a fn when a future completes. Returns a future wrapping the result
@@ -46,15 +78,18 @@
   "Evaluate a form in another thread. The provided function is 
    invoked when the evaluation completes. The function is passed
    the result of the evaluation."
-  [conn code f]
-  {:pre [(fn? f)]}
-  #_(println (format "code in eval is '%s'" code))
-  (try 
-    (when-done (future (send-form conn code)
-                       (read-response conn))
-               f)
-    (catch Exception e
-      (println (format "Exception during do-eval: %s" (.getMessage e))))))
+  ([conn code f]
+   (do-eval conn code f nil))
+  ([conn code f on-output]
+   {:pre [(fn? f)]}
+   #_(println (format "code in eval is '%s'" code))
+   (try 
+     (when-done (future (send-form conn code)
+                        (read-response conn on-output))
+                (fn [result]
+                  (dispatch-callback f result)))
+     (catch Exception e
+       (println (format "Exception during do-eval: %s" (.getMessage e)))))))
 
 (defn repl-init 
   "Startup a prepl server and return a connection to it."

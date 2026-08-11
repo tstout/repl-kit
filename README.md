@@ -9,12 +9,12 @@ This is not a replacment for great REPL editor tools such as cider and calva. Fr
 
 ## deps.edn maven coordinates
 ```
-com.github.tstout/repl-kit {:mvn/version "1.0.12"}
+com.github.tstout/repl-kit {:mvn/version "1.0.13"}
 ```
 ## Usage
 Add this to your deps.edn aliases map:
 ```
-:repl   {:extra-deps  {com.github.tstout/repl-kit  {:mvn/version "1.0.12"}
+:repl   {:extra-deps  {com.github.tstout/repl-kit  {:mvn/version "1.0.13"}
                        org.clojure/tools.namespace {:mvn/version "1.5.0"}}
          :extra-paths ["dev"]
          :main-opts   ["-m" "repl-kit.core"]}

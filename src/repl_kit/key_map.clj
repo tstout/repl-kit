@@ -30,7 +30,10 @@
         state                                                              (atom {:dirty false
                                                                                   :file  nil})
         log-w                                                              (partial log log-window)
-        animation                                                          (mk-label-animation a-label spinner-frames)]
+        animation                                                          (mk-label-animation a-label spinner-frames)
+        emit-output                                                        (fn [text]
+                                                                             (when (some? text)
+                                                                               (log-w (str text))))]
     (map-key txt-area
              "control F"
              (fn [_]
@@ -82,7 +85,8 @@
                   (fn [result]
                     (log-w (format "%s> %s\n"
                                    (:ns result)
-                                   (pr-str (:val result)))))))))
+                                   (pr-str (:val result)))))
+                  emit-output))))
 
     (map-key txt-area
              "control S"
@@ -122,7 +126,8 @@
                                              (zp/zprint-file-str
                                               (:val result)
                                               nil
-                                              fmt-opts)))))
+                                              fmt-opts))))
+                            emit-output)
                    (do
                      (animation :stop)
                      (log-w (format "%s\n Form not valid\n" txt)))))))))
