@@ -30,7 +30,7 @@ clojure -M:repl
 Options:
   -p, --port PORT       5555       REPL port
   -s, --server SERVER   localhost  REPL server(host)
-  -i, --install                    install clojure (future feature)
+  -i, --install                    Configure clojure CLI tool (future feature)
   -f, --font FONT-SIZE  12         font size
   -r, --remote                     connect to remote REPL server, don't start local server
   -h, --help                       show help
